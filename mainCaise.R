@@ -13,6 +13,7 @@ library(ROSE)
 # nodes = 2 
 # registerDoSNOW(makeCluster(nodes, type="SOCK"))
 
+#ss
 Bondora = read.csv("http://kodu.ut.ee/~ilyav/data/Bondora.csv",header = TRUE,sep = ",")
 invalid = which(is.na(Bondora$CreditDecision) | is.na(Bondora$IdCancellation)| is.na(Bondora$PostFundingCancellation))
 Bondora = Bondora[-invalid,]
