@@ -1,6 +1,5 @@
 library(randomForest)
 library(rpart)
-library(e1071)
 library(ggplot2)
 library(reshape)
 library(MASS)
