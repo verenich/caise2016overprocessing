@@ -53,21 +53,13 @@ for (i in 1:length(num_features)) {
 
 Bon = na.omit(Bon)
 
-#factorize targets
-Bon$PostFundingCancellation[Bon$PostFundingCancellation == "1"] = 2
-Bon$PostFundingCancellation[Bon$PostFundingCancellation == "0"] = 1
-Bon$PostFundingCancellation[Bon$PostFundingCancellation == "2"] = 0
-
-Bon$IdCancellation[Bon$IdCancellation == "1"] = 2
-Bon$IdCancellation[Bon$IdCancellation == "0"] = 1
-Bon$IdCancellation[Bon$IdCancellation == "2"] = 0
-
-Bon$PostFundingCancellation = factor(Bon$PostFundingCancellation)
-Bon$IdCancellation = factor(Bon$IdCancellation)
-Bon$CreditDecision = factor(Bon$CreditDecision)
+#factorize targets, reverse the labels for some checks
+Bon$PostFundingCancellation = factor(Bon$PostFundingCancellation,labels = c(1,0))
+Bon$IdCancellation = factor(Bon$IdCancellation, labels=c(1,0))
+Bon$CreditDecision = factor(Bon$CreditDecision, labels=c(0,1))
 
 #tweak predictors
-Breaks = c(0, 20, 30, 40, 50, 60, 70, 80)
+Breaks = c(0, 20, 30, 40, 50, 60, 70, 80) #age groups
 Bon$Age = cut(Bon$Age, breaks = Breaks)
 levels(Bon$Age) = seq(1:length(Breaks))
 
