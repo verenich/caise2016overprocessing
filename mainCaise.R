@@ -155,7 +155,7 @@ runRFtime <- function(dat=Bon,testratio= 0.2,checktype) {
     print(summary(dat$resp))
   }
   
-  if (checktype == "CreditDesicion") {
+  if (checktype == "Creditdecision") {
     dat$resp = 0.3*exp(dat[,2]*0.16*runif(N,0.28,0.4)) + 0.45*exp(dat[,3]*0.25*runif(N,0.3,0.4))
     print(summary(dat$resp))
   }
@@ -184,7 +184,7 @@ runRFtime <- function(dat=Bon,testratio= 0.2,checktype) {
 
 
 tmp4 = runRFtime(dat= Bon, checktype = "IdCancellation")
-tmp5 = runRFtime(dat= Bon, checktype = "CreditDesicion")
+tmp5 = runRFtime(dat= Bon, checktype = "Creditdecision")
 tmp6 = runRFtime(dat= Bon, checktype = "PostFundingCancellation")
 
 # predict reject Pr and processing times for each task
