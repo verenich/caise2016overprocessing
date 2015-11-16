@@ -1,17 +1,20 @@
-library(randomForest)
-library(rpart)
-library(ggplot2)
-library(reshape)
-library(MASS)
-library(ROCR)
-library(foreach)
-library(doSNOW)
-library(rpart.plot)
-library(ROSE)
+#SET THE PATH
+#the path should be the same as with the source file and Data
+path=getwd()
+path
+
+#PACKAGES AND SOURCE FILES
+source('functions_overprocessing.R')
+
+#used for partitioning the data
+seed_nr <- 40952
+
+
 
 # nodes = 2 
 # registerDoSNOW(makeCluster(nodes, type="SOCK"))
 
+#Read and pre-process the data
 Bondora = read.csv("Bondora.csv",header = TRUE,sep = ",")
 invalid = which(is.na(Bondora$CreditDecision) | is.na(Bondora$IdCancellation)| is.na(Bondora$PostFundingCancellation))
 Bondora = Bondora[-invalid,]
