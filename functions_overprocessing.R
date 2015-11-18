@@ -69,6 +69,6 @@ runDT <- function(dat=Bon,testratio= 0.2,checktype,method) {
   predd <- prediction(prob1[,2], testc[,tgt])
   AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
   
-  return(list(tree = tree, AUC = AUC, imp = rf$importance, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
+  return(list(tree = tree, AUC = AUC, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
 }
 
