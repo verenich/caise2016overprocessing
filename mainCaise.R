@@ -10,73 +10,11 @@ source('functions_overprocessing.R')
 seed_nr <- 40952
 
 #Read and pre-process the data
-Bondora = read.csv("Bondora.csv",header = TRUE,sep = ",")
-invalid = which(is.na(Bondora$CreditDecision) | is.na(Bondora$IdCancellation)| is.na(Bondora$PostFundingCancellation))
-Bondora = Bondora[-invalid,]
+dset = read.csv("logs/Bondora.csv",header = TRUE,sep = ",")
+dat = process_bondora(dset)
 
-useful_features = c("Age","Gender","Country","NewCreditCustomer","language_code","education_id",
-                    "marital_status_id","nr_of_dependants","employment_status_id",
-                    "Employment_Duration_Current_Employer","work_experience","occupation_area",
-                    "home_ownership_type_id",
-                    "income_from_principal_employer","income_total","TotalLiabilitiesBeforeLoan",
-                    "TotalMonthlyLiabilities","DebtToIncome",
-                    "AppliedAmountToIncome","LiabilitiesToIncome","NoOfPreviousApplications",
-                    "AmountOfPreviousApplications",
-                    "AppliedAmount","Interest","LoanDuration","UseOfLoan","ApplicationType",
-                    "PostFundingCancellation","IdCancellation","CreditDecision")
-
-useful_features_id = c()
-for (i in 1:length(useful_features)) {
-  foo = which(names(Bondora)==useful_features[i])
-  if((sum(is.na(Bondora[,foo])))/nrow(Bondora) < 0.1) #exclude features where > 10% of values are NA's
-  {useful_features_id = c(useful_features_id,foo)}
-}
-
-num_features = c("AppliedAmount","Interest","LoanDuration","nr_of_dependants","income_from_principal_employer",
-                 "income_total",
-                 "TotalLiabilitiesBeforeLoan","TotalMonthlyLiabilities","DebtToIncome",
-                 "AppliedAmountToIncome","LiabilitiesToIncome","NoOfPreviousApplications",
-                 "AmountOfPreviousApplications")
-
-
-
-Bon = Bondora[,useful_features_id]
-
-num_features_id = c()
-for (i in 1:length(num_features)) {
-  foo = which(names(Bon)==num_features[i])
-  if((sum(is.na(Bon[,foo])))/nrow(Bon) < 0.1) #exclude features where > 10% of values are NA's
-  {num_features_id = c(num_features_id,foo)}
-}
-
-Bon = na.omit(Bon)
-
-#factorize targets, reverse the labels for some checks
-Bon$PostFundingCancellation = factor(Bon$PostFundingCancellation,labels = c(1,0))
-Bon$IdCancellation = factor(Bon$IdCancellation, labels=c(1,0))
-Bon$CreditDecision = factor(Bon$CreditDecision, labels=c(0,1))
-
-#tweak predictors
-Breaks = c(0, 20, 30, 40, 50, 60, 70, 80) #age groups
-Bon$Age = cut(Bon$Age, breaks = Breaks)
-levels(Bon$Age) = seq(1:length(Breaks))
-
-Bon$Gender = factor(Bon$Gender)
-Bon$NewCreditCustomer = factor(Bon$NewCreditCustomer)
-Bon$language_code = factor(Bon$language_code)
-Bon$UseOfLoan = factor(Bon$UseOfLoan)
-Bon$ApplicationType = factor(Bon$ApplicationType)
-Bon$education_id = factor(Bon$education_id)
-Bon$marital_status_id = factor(Bon$marital_status_id)
-Bon$employment_status_id = factor(Bon$employment_status_id)
-Bon$occupation_area = factor(Bon$occupation_area)
-Bon$home_ownership_type_id = factor(Bon$home_ownership_type_id)
-
-M = which(Bon$nr_of_dependants == "")
-Bon = Bon[-M,]
-M = which(levels(Bon$nr_of_dependants)=="10Plus")
-levels(Bon$nr_of_dependants)[M] = "11"
-Bon$nr_of_dependants = as.numeric(as.character(Bon$nr_of_dependants))
+dset = read.csv("logs/env-permit.csv",header = TRUE, sep = ",")
+dat = process_envpermit(dset)
 
 iddev = sample(1:nrow(Bon),round(0.2*nrow(Bon)),replace=F)
 devset = Bon[iddev,] # development set - put aside 
