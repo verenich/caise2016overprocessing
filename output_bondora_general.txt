@@ -1,11 +1,11 @@
 ***** STATISTICS ******* 
 1 check	2 checks	3 checks	
-258		591		7163
+578		326		7108
 
 PROCESSING
 1 check	3 checks	
-1248		6764
+1227		6785
 
 OVERPROCESSING
 1 check	2 checks	3 checks	
-7022	591	399
+7363	326	323

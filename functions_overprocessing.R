@@ -54,7 +54,7 @@ preprocessBondora<-function(dat=Bon, koActivities){
 }
 
 
-preprocessEnvpermit <- function(dat) {
+preprocessEnvpermit <- function(dat, koActivities) {
   dat$lifecycle.transition = NULL
   dat$Variant = NULL
   dat$concept.instance = NULL
@@ -77,16 +77,6 @@ preprocessEnvpermit <- function(dat) {
   foo = which(dat$whichfailed == "unknown" | dat$whichfailed == "Confirmation of receipt")
   dat = dat[-foo,]
   
-  useful_features = c("Resource","X.case..channel","X.case..department","X.case..group","X.case..responsible","org.group","whichfailed")
-  useful_features_id = c()
-  for (i in 1:length(useful_features)) {
-    foo = which(names(dat)==useful_features[i])
-    if((sum(is.na(dat[,foo])))/nrow(dat) < 0.1) #exclude features where > 10% of values are NA's
-    {useful_features_id = c(useful_features_id,foo)}
-  }
-  
-  dat = dat[,useful_features_id]
-  
   dat$T02 = 1
   dat$T06 = 1
   dat$T10 = 1
@@ -107,15 +97,17 @@ preprocessEnvpermit <- function(dat) {
   dat$T06 = as.factor(dat$T06)
   dat$T10 = as.factor(dat$T10)
   
+  dat = generateConstTime(dat, koActivities)
   return(dat)
 }
+
 
 #generic preprocessing
 # clean the NA data, filter the usefulFeatures under a threshold and returns the cleaned numeric features
 preprocessData<-function(data, koActivities, usefulFeatures, numFeatures){
   koIndexes = match(koActivities, colnames(data))
   invalid = which(is.na(data[,koIndexes]), arr.ind=TRUE)[,1]
-  data=data[-invalid,]
+  if(length(invalid) > 0) data=data[-invalid,]
   
   usefulFeaturesIndexes = c()
   for (i in 1:length(usefulFeatures)) {
@@ -134,10 +126,10 @@ preprocessData<-function(data, koActivities, usefulFeatures, numFeatures){
   
   dataFiltered = na.omit(dataFiltered)
   
-#   for (i in 1:ncol(dat)) {
-#     if(is.factor(dat[,i]) == TRUE)
-#       dat[,i]=droplevels(dat[,i])
-#   }
+  for (i in 1:ncol(dataFiltered)) {
+    if(is.factor(dataFiltered[,i]) == TRUE)
+      dataFiltered[,i]=droplevels(dataFiltered[,i])
+  }
   
   return (list(dataFiltered=dataFiltered, numFeaturesIndexes=numFeaturesIndexes))
   
@@ -209,7 +201,18 @@ runRF <- function(dat,testratio= 0.2,checktype,method="none") {
   
   prob1 <- predict(rf, testc[,-tgt], type = "prob")
   predd <- prediction(prob1[,2], testc[,tgt])
-  AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
+  #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
+  
+  AUC = -1
+  result = tryCatch({
+    AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
+  }, warning = function(w) {
+    # log the warning or take other action here
+  }, error = function(e) {
+    # log the error or take other action here
+  }, finally = {
+    # this will execute no matter what else happened
+  })
   
   return(list(rf = rf, AUC = AUC, imp = rf$importance, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
 }
@@ -382,7 +385,7 @@ printOutput<-function(i, permutations, order, fileOutputPath){
     permutations$checks - permutations$minimum_check_num
   ))
   cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-  fileName = paste(cleanedFileName,"_",i, ".csv", sep = "")
+  fileName = paste("output_",cleanedFileName,"_",i, ".csv", sep = "")
   write.table (
     toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
   )
@@ -400,7 +403,9 @@ computeBestPermutation <-
     print("reading in data file")
     inputData = read.csv(fileInputPath,header = TRUE,sep = ",")
     print("data preprocessing")
-    prepreProcessedData=preprocessBondora(inputData, koActivities=koActivities)
+    if(fileInputPath=="Bondora.csv") {prepreProcessedData=preprocessBondora(inputData, koActivities=koActivities)}
+    if(fileInputPath=="Envpermit.csv") {prepreProcessedData=preprocessEnvpermit(inputData, koActivities=koActivities)}
+    
     preprocessedData = preprocessData(
       data=prepreProcessedData, koActivities = koActivities, usefulFeatures = usefulFeatures, numFeatures = numFeatures
     )
@@ -418,10 +423,16 @@ computeBestPermutation <-
       )
       
       print("computing processing time")
-      predictedTime_gen = computePredictedTime (
+      if(fileInputPath=="Bondora.csv") {
+        predictedTime_gen = computePredictedTime (
         trainingData = data_gen$trainingData, testData = data_gen$testData, numFeaturesIndexes =
-          preprocessedData$numFeaturesIndexes, koActivities = koActivities
-      )
+          preprocessedData$numFeaturesIndexes, koActivities = koActivities)
+      }
+      
+      if(fileInputPath=="Envpermit.csv") { # do not predict, just copy all ones as PTs
+        predictedTime_gen = data_gen$testData
+        predictedTime_gen = predictedTime_gen[(ncol(predictedTime_gen)-length(koActivities)+1):ncol(predictedTime_gen)]
+      }
       
       print("computing permutations")
       permutationsData_gen = computePermutations(
@@ -450,7 +461,7 @@ computeBestPermutation <-
       
     }
     cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-    fileNameGeneral = paste(cleanedFileName,"_general", ".txt", sep = "")
+    fileNameGeneral = paste("output_",cleanedFileName,"_general", ".txt", sep = "")
     tableChecks=tableChecks/n
     tableMinimumChecks= tableMinimumChecks/n
     tableOverprocessing=tableOverprocessing/n

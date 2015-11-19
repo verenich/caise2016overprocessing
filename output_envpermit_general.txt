@@ -1,0 +1,11 @@
+***** STATISTICS ******* 
+1 check	2 checks	3 checks	
+2		15		229
+
+PROCESSING
+1 check	3 checks	
+163		83
+
+OVERPROCESSING
+1 check	2 checks	3 checks	
+85	15	146
