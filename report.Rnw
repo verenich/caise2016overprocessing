@@ -1,9 +1,12 @@
 \documentclass{article}
+\usepackage[left=0.75in,top=0.65in,right=0.75in,bottom=0.55in]{geometry}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
-
-<<results=hide>>=
+\title{Calculation of processing and overprocessing}
+\date{}
+\maketitle
+<<echo=FALSE, results=hide>>=
 library(ggplot2)
 library(reshape)
 @
