@@ -1,0 +1,120 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+<<results=hide>>=
+library(ggplot2)
+library(reshape)
+@
+
+\section{For Bondora log}
+<< >>=
+result = read.csv("output_bondora_1.csv",header = TRUE)
+@
+
+Average number of checks that one would do if they follow \textbf{our ordering}:
+
+<<>>=
+mean(result$nr_checks_our_suggestion)
+@
+
+Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
+
+<<>>=
+mean(result$nr_checks_wil)
+@
+
+Average number of checks that one would do if for every case they do checks in \textbf{random order}
+
+<<>>=
+mean(result$nr_checks_random)
+@
+
+Average \textbf{overprocessing} - our method
+
+<<>>=
+mean(result$nr_checks_our_suggestion - result$minimum_check_number)
+@
+
+Average \textbf{overprocessing} - Wil method
+
+<<>>=
+mean(result$nr_checks_wil - result$minimum_check_number)
+@
+
+Average \textbf{overprocessing} - random ordering
+
+<<>>=
+mean(result$nr_checks_random - result$minimum_check_number)
+@
+
+\paragraph{Distribution of overprocessing}
+
+<<fig=true>>=
+result$our = result$nr_checks_our_suggestion - result$minimum_check_number
+result$wil = result$nr_checks_wil - result$minimum_check_number
+result$rand = result$nr_checks_random - result$minimum_check_number
+tt = as.data.frame(cbind(table(result$our), table(result$wil), table(result$rand)))
+colnames(tt)=c("our","wil","rand")
+tt$overprocessing = rownames(tt)
+tt.m = melt(tt, id.vars='overprocessing')
+ggplot(tt.m, aes(overprocessing, value))+  geom_bar(aes(fill = variable), position = "dodge", stat="identity") + theme_grey(base_size = 18) + ylab("Nr of cases")
+@
+
+
+\section{For Environmental permit log}
+<< >>=
+result = read.csv("output_envpermit_1.csv",header = TRUE,sep=",")
+@
+
+Average number of checks that one would do if they follow \textbf{our ordering}:
+
+<<>>=
+mean(result$nr_checks_our_suggestion)
+@
+
+Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
+
+<<>>=
+mean(result$nr_checks_wil)
+@
+
+Average number of checks that one would do if for every case they do checks in \textbf{random order}
+
+<<>>=
+mean(result$nr_checks_random)
+@
+
+Average \textbf{overprocessing} - our method
+
+<<>>=
+mean(result$nr_checks_our_suggestion - result$minimum_check_number)
+@
+
+Average \textbf{overprocessing} - Wil method
+
+<<>>=
+mean(result$nr_checks_wil - result$minimum_check_number)
+@
+
+Average \textbf{overprocessing} - random ordering
+
+<<>>=
+mean(result$nr_checks_random - result$minimum_check_number)
+@
+
+\paragraph{Distribution of overprocessing}
+
+<<fig=true>>=
+result$our = result$nr_checks_our_suggestion - result$minimum_check_number
+result$wil = result$nr_checks_wil - result$minimum_check_number
+result$rand = result$nr_checks_random - result$minimum_check_number
+tt = as.data.frame(cbind(table(result$our), table(result$wil), table(result$rand)))
+colnames(tt)=c("our","wil","rand")
+tt$overprocessing = rownames(tt)
+tt.m = melt(tt, id.vars='overprocessing')
+ggplot(tt.m, aes(overprocessing, value))+  geom_bar(aes(fill = variable), position = "dodge", stat="identity") + theme_grey(base_size = 18) + ylab("Nr of cases")
+@
+
+\end{document}

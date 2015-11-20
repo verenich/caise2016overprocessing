@@ -30,20 +30,22 @@ computeBestPermutation(fileInputPath="Bondora.csv", fileOutputPath="bondora.csv"
                        koActivities=koActivities, 
                        usefulFeatures, numFeatures,n=1)
 
-#### For the environmental permit log - uncomment if you want to use this ####
-# rm(list=ls())
-# source('functions_overprocessing.R')
-# seed_nr <- 40952
-# set.seed(seed_nr)
-# 
-# koActivities=c("T02","T06","T10")
-# 
-# usefulFeatures = c("Resource","X.case..channel","X.case..department","X.case..group","X.case..responsible",
-#                    "org.group", koActivities,paste(koActivities,"_time",sep = ""))
-# 
-# numFeatures = c()
-# 
-# computeBestPermutation(fileInputPath="Envpermit.csv", fileOutputPath="envpermit.csv", 
-#                        koActivities=koActivities, 
-#                        usefulFeatures, numFeatures,n=1)
-# 
+
+
+### For the environmental permit log - uncomment if you want to use this ####
+rm(list=ls())
+source('functions_overprocessing.R')
+seed_nr <- 40952
+set.seed(seed_nr)
+
+koActivities=c("T02","T06","T10")
+
+usefulFeatures = c("Resource","X.case..channel","X.case..department","X.case..group","X.case..responsible",
+                   "org.group", koActivities,paste(koActivities,"_time",sep = ""))
+
+numFeatures = c()
+
+computeBestPermutation(fileInputPath="Envpermit.csv", fileOutputPath="envpermit.csv", 
+                       koActivities=koActivities, 
+                       usefulFeatures, numFeatures,n=1)
+

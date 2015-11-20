@@ -302,7 +302,7 @@ computePredictedTime <- function(trainingData, testData, numFeaturesIndexes, koA
   return (predT)
 }
 
-computePermutations <- function(rejectProbability, predictedTimes, testData, koActivities) {
+computePermutations <- function(rejectProbability, trainingData, koActivities) {
   permutations = permutations(length(koActivities), length(koActivities), koActivities)
   rownames(permutations)=c(1:nrow(permutations))
   
@@ -333,20 +333,50 @@ computePermutations <- function(rejectProbability, predictedTimes, testData, koA
 }
 
 computeCheckNumber <- function(permutations, order, testData, koActivities) {
-  best_index = which(colnames(permutations)=="best")
+  our_index = which(colnames(permutations)=="Wilbest")
+  Wil_index = which(colnames(permutations)=="ourbest")
+  rand_index = which(colnames(permutations)=="rand")
   name_index = which(colnames(permutations)=="name")
-  permutations$checks = apply(permutations, 1, function(x) {
-    best_order = order[as.numeric(x[best_index]),]
+  
+  permutations$ourchecks = apply(permutations, 1, function(x) {
+    our_order = order[as.numeric(x[our_index]),]
     #print(best_order)
     testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
     counter=0
-    for (check in best_order) {
+    for (check in our_order) {
       counter=counter+1
       if(testData[testDataIndex,which(colnames(testData)==check)]==0){
         break;
       }
     }
     return (counter)})
+    
+    permutations$Wilchecks = apply(permutations, 1, function(x) {
+    Wil_order = order[as.numeric(x[Wil_index]),]
+    #print(best_order)
+    testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
+    counter=0
+    for (check in Wil_order) {
+      counter=counter+1
+      if(testData[testDataIndex,which(colnames(testData)==check)]==0){
+        break;
+      }
+    }
+    return (counter)})
+    
+    permutations$randchecks = apply(permutations, 1, function(x) {
+    rand_order = order[as.numeric(x[rand_index]),]
+    #print(best_order)
+    testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
+    counter=0
+    for (check in rand_order) {
+      counter=counter+1
+      if(testData[testDataIndex,which(colnames(testData)==check)]==0){
+        break;
+      }
+    }
+    return (counter)})
+    
   permutations$minimum_check_num = apply(permutations, 1, function(x) {
     testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
     PCCounterArray = mapply(function(y){
@@ -365,25 +395,26 @@ computeCheckNumber <- function(permutations, order, testData, koActivities) {
 
 printOutput<-function(i, permutations, order, fileOutputPath){
   
-  globalTable = cbind(
-    permutations$best, order[permutations$best,],permutations$checks, permutations$minimum_check_num, (
-      permutations$checks - permutations$minimum_check_num
-    )
-  )
-  row.names(globalTable) = permutations$name
-  columns = c(
-    "Permutation Number", mapply(function(x)
-      sprintf("KOActivity_%i",x), seq(1, length(koActivities))), "Number of checks to be executed according to the suggestion", "Minimum Check Number (Ideal Processing)", "Check Overprocessing"
-  )
-  colnames(globalTable) = columns
-  intermediateTable = globalTable[,-1]
+#   globalTable = cbind(
+#     permutations$ourbest, order[permutations$ourbest,],permutations$ourchecks, permutations$minimum_check_num, (
+#       permutations$ourchecks - permutations$minimum_check_num
+#     )
+#   )
   
-  toPrint = intermediateTable[order(as.numeric(rownames(intermediateTable))),]
-  print(table(permutations$checks))
-  print(table(permutations$minimum_check_num))
-  print(table(
-    permutations$checks - permutations$minimum_check_num
-  ))
+  globalTable = permutations
+  row.names(globalTable) = permutations$name
+  globalTable$name <- NULL
+ 
+#   columns = c(
+#     "Permutation Number", mapply(function(x)
+#       sprintf("KOActivity_%i",x), seq(1, length(koActivities))), "Number of checks to be executed according to the suggestion", "Minimum Check Number (Ideal Processing)", "Check Overprocessing"
+#   )
+  colnames(globalTable) = c("our_best_permutation","wil_best","random",
+                            "nr_checks_our_suggestion",
+                            "nr_checks_wil","nr_checks_random",
+                            "minimum_check_number")
+  
+  toPrint = globalTable[order(as.numeric(rownames(globalTable))),]
   cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
   fileName = paste("output_",cleanedFileName,"_",i, ".csv", sep = "")
   write.table (
@@ -435,64 +466,104 @@ computeBestPermutation <-
       }
       
       print("computing permutations")
-      permutationsData_gen = computePermutations(
-        rejectProbability = rejectPb_gen, predictedTimes = predictedTime_gen, testData = data_gen$testData, koActivities = koActivities
+      # Our model - order checks in decreasing probability of rejection
+      Order = permutations(length(koActivities), length(koActivities), koActivities)
+      rownames(Order)=c(1:nrow(Order))
+      
+      tmp = t(apply(rejectPb_gen, 1, function(x) {
+        order(x,decreasing = TRUE)
+      }
+      ))
+      
+      tmp2 = apply(tmp,1:2, function(x) {
+        x = colnames(rejectPb_gen)[x]
+      }
       )
       
-      permutations = permutationsData_gen$perm
-      order = permutationsData_gen$order
+      ourbest=rep(-1,nrow(tmp2))
+      for (i in 1:nrow(tmp2)) {
+        for (j in 1:nrow(Order)) {
+          if (sum(tmp2[i,]==Order[j,])==length(koActivities)) ourbest[i]=j
+        }
+      }
       
-      best = apply(permutations, 1, function(x)
-        which.min(x))
-      permutations = as.data.frame(cbind (permutations,best))
+      # Wil's model - constant probabilities of rejection "learnt" from the training set
+      trainingData = data_gen$trainingData
+      koIndexes = match(koActivities, colnames(trainingData))
+      rejectPb_Wil = rejectPb_gen
+      for (i in 1:ncol(rejectPb_Wil)) {
+        foo = which(colnames(trainingData) == colnames(rejectPb_Wil)[i])
+        rejectPb_Wil[,i] = sum(trainingData[,foo]==0)/nrow(trainingData)
+      }
       
-      table(permutations$best)
-      permutations$name = row.names(permutations)
+      tmp = t(apply(rejectPb_Wil, 1, function(x) {
+        order(x,decreasing = TRUE)
+      }
+      ))
+      
+      tmp2 = apply(tmp,1:2, function(x) {
+        x = colnames(rejectPb_Wil)[x]
+      }
+      )
+      
+      Wilbest=rep(-1,nrow(tmp2))
+      for (i in 1:nrow(tmp2)) {
+        for (j in 1:nrow(Order)) {
+          if (sum(tmp2[i,]==Order[j,])==length(koActivities)) Wilbest[i]=j
+        }
+      }
+      
+      # random model
+      rand = sample(1:nrow(Order),nrow(tmp2),replace = TRUE)
+      
+      permutations = as.data.frame(cbind (ourbest,Wilbest,rand))
+      permutations$name = row.names(rejectPb_gen)
+      
       newPermutations = computeCheckNumber(
-        permutations=permutations, order = order, testData=data_gen$testData, koActivities = koActivities
+        permutations=permutations, order = Order, testData=data_gen$testData, koActivities = koActivities
       )  
       
-      printOutput(i=i, permutations=newPermutations, order=order, fileOutputPath = fileOutputPath)
-      tableChecks=tableChecks+table(newPermutations$checks)
-      tableMinimumChecks=tableMinimumChecks+table(newPermutations$minimum_check_num) 
-      tableOverprocessing=tableOverprocessing+table(
-        newPermutations$checks - newPermutations$minimum_check_num
-      )
+      printOutput(i=n, permutations=newPermutations, order=Order, fileOutputPath = fileOutputPath)
+#       tableChecks=tableChecks+table(newPermutations$checks)
+#       tableMinimumChecks=tableMinimumChecks+table(newPermutations$minimum_check_num) 
+#       tableOverprocessing=tableOverprocessing+table(
+#         newPermutations$checks - newPermutations$minimum_check_num
+#       )
       
     }
-    cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-    fileNameGeneral = paste("output_",cleanedFileName,"_general", ".txt", sep = "")
-    tableChecks=tableChecks/n
-    tableMinimumChecks= tableMinimumChecks/n
-    tableOverprocessing=tableOverprocessing/n
+#     cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
+#     fileNameGeneral = paste("output_",cleanedFileName,"_general", ".txt", sep = "")
+#     tableChecks=tableChecks/n
+#     tableMinimumChecks= tableMinimumChecks/n
+#     tableOverprocessing=tableOverprocessing/n
     
-    write (
-      "***** STATISTICS ******* ", file = fileNameGeneral, append = FALSE, sep = ""
-    )
-    cat(
-      c("1 check", "2 checks", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
-    )     
-    cat(
-      tableChecks, file = fileNameGeneral, append = TRUE, sep = "\t\t"
-    ) 
-    write(
-      c("\n","PROCESSING"), file = fileNameGeneral, append = TRUE, sep = "\t"
-    )       
-    cat(
-      c("1 check", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
-    )       
-    cat(
-      tableMinimumChecks, file = fileNameGeneral, append = TRUE, sep = "\t\t"
-    )
-    write(
-      c("\n","OVERPROCESSING"), file = fileNameGeneral, append = TRUE, sep = "\t"
-    )       
-    cat(
-      c("1 check", "2 checks", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
-    )     
-    write(
-      tableOverprocessing, file = fileNameGeneral, append = TRUE, sep = "\t"
-    )
+#     write (
+#       "***** STATISTICS ******* ", file = fileNameGeneral, append = FALSE, sep = ""
+#     )
+#     cat(
+#       c("1 check", "2 checks", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
+#     )     
+#     cat(
+#       tableChecks, file = fileNameGeneral, append = TRUE, sep = "\t\t"
+#     ) 
+#     write(
+#       c("\n","PROCESSING"), file = fileNameGeneral, append = TRUE, sep = "\t"
+#     )       
+#     cat(
+#       c("1 check", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
+#     )       
+#     cat(
+#       tableMinimumChecks, file = fileNameGeneral, append = TRUE, sep = "\t\t"
+#     )
+#     write(
+#       c("\n","OVERPROCESSING"), file = fileNameGeneral, append = TRUE, sep = "\t"
+#     )       
+#     cat(
+#       c("1 check", "2 checks", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
+#     )     
+#     write(
+#       tableOverprocessing, file = fileNameGeneral, append = TRUE, sep = "\t"
+#     )
     
   }
 

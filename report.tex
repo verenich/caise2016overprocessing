@@ -1,0 +1,193 @@
+\documentclass{article}
+
+\usepackage{Sweave}
+\begin{document}
+\input{report-concordance}
+
+\begin{Schunk}
+\begin{Sinput}
+> library(ggplot2)
+> library(reshape)
+\end{Sinput}
+\end{Schunk}
+
+\section{For Bondora log}
+\begin{Schunk}
+\begin{Sinput}
+> result = read.csv("output_bondora_1.csv",header = TRUE)
+\end{Sinput}
+\end{Schunk}
+
+Average number of checks that one would do if they follow \textbf{our ordering}:
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_our_suggestion)
+\end{Sinput}
+\begin{Soutput}
+[1] 2.796306
+\end{Soutput}
+\end{Schunk}
+
+Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_wil)
+\end{Sinput}
+\begin{Soutput}
+[1] 2.843984
+\end{Soutput}
+\end{Schunk}
+
+Average number of checks that one would do if for every case they do checks in \textbf{random order}
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_random)
+\end{Sinput}
+\begin{Soutput}
+[1] 2.84673
+\end{Soutput}
+\end{Schunk}
+
+Average \textbf{overprocessing} - our method
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_our_suggestion - result$minimum_check_number)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.1025961
+\end{Soutput}
+\end{Schunk}
+
+Average \textbf{overprocessing} - Wil method
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_wil - result$minimum_check_number)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.1502746
+\end{Soutput}
+\end{Schunk}
+
+Average \textbf{overprocessing} - random ordering
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_random - result$minimum_check_number)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.1530205
+\end{Soutput}
+\end{Schunk}
+
+\paragraph{Distribution of overprocessing}
+
+\begin{Schunk}
+\begin{Sinput}
+> result$our = result$nr_checks_our_suggestion - result$minimum_check_number
+> result$wil = result$nr_checks_wil - result$minimum_check_number
+> result$rand = result$nr_checks_random - result$minimum_check_number
+> tt = as.data.frame(cbind(table(result$our), table(result$wil), table(result$rand)))
+> colnames(tt)=c("our","wil","rand")
+> tt$overprocessing = rownames(tt)
+> tt.m = melt(tt, id.vars='overprocessing')
+> ggplot(tt.m, aes(overprocessing, value))+  geom_bar(aes(fill = variable), position = "dodge", stat="identity") + theme_grey(base_size = 18) + ylab("Nr of cases")
+\end{Sinput}
+\end{Schunk}
+\includegraphics{report-009}
+
+
+\section{For Environmental permit log}
+\begin{Schunk}
+\begin{Sinput}
+> result = read.csv("output_envpermit_1.csv",header = TRUE,sep=",")
+\end{Sinput}
+\end{Schunk}
+
+Average number of checks that one would do if they follow \textbf{our ordering}:
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_our_suggestion)
+\end{Sinput}
+\begin{Soutput}
+[1] 1.699187
+\end{Soutput}
+\end{Schunk}
+
+Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_wil)
+\end{Sinput}
+\begin{Soutput}
+[1] 2.97561
+\end{Soutput}
+\end{Schunk}
+
+Average number of checks that one would do if for every case they do checks in \textbf{random order}
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_random)
+\end{Sinput}
+\begin{Soutput}
+[1] 2.386179
+\end{Soutput}
+\end{Schunk}
+
+Average \textbf{overprocessing} - our method
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_our_suggestion - result$minimum_check_number)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.02439024
+\end{Soutput}
+\end{Schunk}
+
+Average \textbf{overprocessing} - Wil method
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_wil - result$minimum_check_number)
+\end{Sinput}
+\begin{Soutput}
+[1] 1.300813
+\end{Soutput}
+\end{Schunk}
+
+Average \textbf{overprocessing} - random ordering
+
+\begin{Schunk}
+\begin{Sinput}
+> mean(result$nr_checks_random - result$minimum_check_number)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.7113821
+\end{Soutput}
+\end{Schunk}
+
+\paragraph{Distribution of overprocessing}
+
+\begin{Schunk}
+\begin{Sinput}
+> result$our = result$nr_checks_our_suggestion - result$minimum_check_number
+> result$wil = result$nr_checks_wil - result$minimum_check_number
+> result$rand = result$nr_checks_random - result$minimum_check_number
+> tt = as.data.frame(cbind(table(result$our), table(result$wil), table(result$rand)))
+> colnames(tt)=c("our","wil","rand")
+> tt$overprocessing = rownames(tt)
+> tt.m = melt(tt, id.vars='overprocessing')
+> ggplot(tt.m, aes(overprocessing, value))+  geom_bar(aes(fill = variable), position = "dodge", stat="identity") + theme_grey(base_size = 18) + ylab("Nr of cases")
+\end{Sinput}
+\end{Schunk}
+\includegraphics{report-017}
+
+\end{document}
