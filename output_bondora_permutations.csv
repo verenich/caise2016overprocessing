@@ -1,0 +1,6 @@
+CreditDecision,IdCancellation,PostFundingCancellation
+CreditDecision,PostFundingCancellation,IdCancellation
+IdCancellation,CreditDecision,PostFundingCancellation
+IdCancellation,PostFundingCancellation,CreditDecision
+PostFundingCancellation,CreditDecision,IdCancellation
+PostFundingCancellation,IdCancellation,CreditDecision

@@ -4,7 +4,7 @@ rm(list=ls())
 source('functions_overprocessing.R')
 
 #used for partitioning the data
-seed_nr <- 40952
+seed_nr <- 402
 set.seed(seed_nr)
 
 koActivities=c("IdCancellation", "PostFundingCancellation", "CreditDecision")
@@ -35,7 +35,7 @@ computeBestPermutation(fileInputPath="Bondora.csv", fileOutputPath="bondora.csv"
 ### For the environmental permit log - uncomment if you want to use this ####
 rm(list=ls())
 source('functions_overprocessing.R')
-seed_nr <- 40952
+seed_nr <- 4052
 set.seed(seed_nr)
 
 koActivities=c("T02","T06","T10")
@@ -45,7 +45,9 @@ usefulFeatures = c("Resource","X.case..channel","X.case..department","X.case..gr
 
 numFeatures = c()
 
+disallowed_permutation = matrix(c("T10","T10","T06","T02","T02","T06"),ncol = length(koActivities))
+
 computeBestPermutation(fileInputPath="Envpermit.csv", fileOutputPath="envpermit.csv", 
                        koActivities=koActivities, 
-                       usefulFeatures, numFeatures,n=1)
+                       usefulFeatures, numFeatures,disallowed_permutation = disallowed_permutation, n=1)
 

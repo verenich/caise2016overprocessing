@@ -181,68 +181,75 @@ removeTimeColumns<-function(data){
 
 
 ####functions for MACHINE LEARNING model training####
-
-runRF <- function(dat,testratio= 0.2,checktype,method="none") {
+runRF <- function(dat,testratio= 0.05,checktype,method="none") {
   tgt = which(colnames(dat) == checktype)
   
-   
-  dat_bal <- dat
   #if(method != "none") {dat_bal <- ovun.sample(reformulate(colnames(dat)[-tgt],response = colnames(dat)[tgt]), data=dat, p=0.5, seed=1, method="over")$data}
-   
-  testid = sample(1:nrow(dat_bal),round(testratio*nrow(dat_bal)),replace = F)
-  testc = dat_bal[testid,]
-  trainc = dat_bal[-testid,]
   
-  rf <- randomForest(x=trainc[,1:(ncol(dat_bal)-3)], y = trainc[,tgt], ntree = 100, importance = TRUE,do.trace=FALSE)
+  testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
+  testc = dat[testid,]
+  trainc = dat[-testid,]
   
-  predicted <- predict(rf, testc[,-tgt], type = "response")
+  formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
+  print(formul)
+  model <- randomForest(formul, data = dat, ntree = 100, importance = TRUE,do.trace=FALSE)
+  
+  predicted <- predict(model, testc[,-tgt], type = "response")
   tt = table(pred=predicted, actual=testc[,tgt])
   err = 1 - sum(diag(tt))/sum(tt)
   
-  prob1 <- predict(rf, testc[,-tgt], type = "prob")
+  prob1 <- predict(model, testc[,-tgt], type = "prob")
   predd <- prediction(prob1[,2], testc[,tgt])
   #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
   
-  AUC = -1
-  result = tryCatch({
-    AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
-  }, warning = function(w) {
-    # log the warning or take other action here
-  }, error = function(e) {
-    # log the error or take other action here
-  }, finally = {
-    # this will execute no matter what else happened
-  })
-  
-  return(list(rf = rf, AUC = AUC, imp = rf$importance, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
+  return(list(model = model, imp = model$importance, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
 }
 
-# 
-# runRF <- function(dat,testratio= 0.2,checktype,method="none") {
-#   tgt = which(colnames(dat) == checktype)
-#   
-#   #if(method != "none") {dat_bal <- ovun.sample(reformulate(colnames(dat)[-tgt],response = colnames(dat)[tgt]), data=dat, p=0.5, seed=1, method="over")$data}
-#   
-#   testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
-#   testc = dat[testid,]
-#   trainc = dat[-testid,]
-#   
-#   formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
-#   rf <- randomForest(formul, ntree = 100, importance = TRUE,do.trace=FALSE)
-#   
-#   predicted <- predict(rf, testc[,-tgt], type = "response")
-#   tt = table(pred=predicted, actual=testc[,tgt])
-#   err = 1 - sum(diag(tt))/sum(tt)
-#   
-#   prob1 <- predict(rf, testc[,-tgt], type = "prob")
-#   predd <- prediction(prob1[,2], testc[,tgt])
-#   AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
-#   
-#   return(list(rf = rf, AUC = AUC, imp = rf$importance, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
-# }
-# 
-runSVM <- function() {
-  warning("to be implemented")
+runDT <- function(dat,testratio= 0.05,checktype,method) {
+  tgt = which(colnames(dat) == checktype)
+  
+  #if(method != "none") {dat_bal <- ovun.sample(reformulate(colnames(dat)[-tgt],response = colnames(dat)[tgt]), data=dat, p=0.5, seed=1, method="over")$data}
+  
+  testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
+  testc = dat[testid,]
+  trainc = dat[-testid,]
+  
+  formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
+  obj2 = tune.rpart(formul, data = trainc, cp = c(0.01,0.1,0.2,0.5,0.8))
+  model <- rpart(form2, data = trainc, cp = obj2$best.parameters[1])
+  
+  predicted <- predict(model, testc[,-tgt], type = "class")
+  tt = table(pred=predicted, actual=testc[,tgt])
+  err = 1 - sum(diag(tt))/sum(tt)
+  
+  prob1 <- predict(model, testc[,-tgt], type = "prob")
+  predd <- prediction(prob1[,2], testc[,tgt])
+  #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
+  
+  return(list(model = model, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
+}
+
+runSVM <- function(dat,testratio= 0.05,checktype,method) {
+  tgt = which(colnames(dat) == checktype)
+  
+  testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
+  testc = dat[testid,]
+  trainc = dat[-testid,]
+  
+  formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
+  model <- svm(formul, data = trainc, probability = TRUE, kernel = "radial")
+  
+  predicted <- predict(model, testc[,-tgt])
+  tt = table(pred=predicted, actual=testc[,tgt])
+  err = 1 - sum(diag(tt))/sum(tt)
+  
+  prob1 <- predict(model, testc[,-tgt], probability = TRUE)
+  prob_values <- attr(prob1, "probabilities")
+  predd <- prediction(prob_values[,2], testc[,tgt])
+  #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
+  
+  return(list(model = model, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
+  
 }
 
 #predict processing times
@@ -273,8 +280,8 @@ computeRejectProbability <- function(trainingData, testData, koActivities){
   # predict reject probability for each task
   predRP = apply(RFResults, 2, function(x) { 
     index = which(colnames(testData)==x$koActivities)
-    pred = predict(x$rf, testData[, -index], type="prob")
-    return (pred[,2])
+    pred = predict(x$model, testData[, -index], type="prob")
+    return (pred[,1]) # !!!
   })
   
   return (predRP)
@@ -302,82 +309,60 @@ computePredictedTime <- function(trainingData, testData, numFeaturesIndexes, koA
   return (predT)
 }
 
-computePermutations <- function(rejectProbability, trainingData, koActivities) {
-  permutations = permutations(length(koActivities), length(koActivities), koActivities)
-  rownames(permutations)=c(1:nrow(permutations))
+computePermutations <- function(rejectProbability, koActivities, Order) {
+
+  tmp = t(apply(rejectProbability, 1, function(x) {
+    order(x,decreasing = TRUE)
+  }
+  ))
   
-  results = apply(permutations, 1, function(x) {
-    index = which(apply(t(permutations) == x,2,all))
+  tmp2 = apply(tmp,1:2, function(x) {
+    x = colnames(rejectProbability)[x]
+  }
+  )
+  
+  best=rep(-1,nrow(tmp2))
+  for (i in 1:nrow(tmp2)) {
+    for (j in 1:nrow(Order)) {
+      if (sum(tmp2[i,]==Order[j,])==length(koActivities)) best[i]=j
+    }
+  }
+  return(best)
+}
+
+computePermutationsByFormula <- function(rejectProbability, koActivities, Order) {
+
+  results = apply(Order, 1, function(x) {
+    index = which(apply(t(Order) == x,2,all))
     total = 0
     for(i in 1:length(x)){
       check = x[i]
-      checkTime = paste(check,"_time", sep="")
       checkIndexRP = which(colnames(rejectProbability)==check)
-      checkIndexPT = which(colnames(predictedTimes)==checkTime)
-      current = predictedTimes[,checkIndexPT]*rejectProbability[,checkIndexRP]
+      current = rejectProbability[,checkIndexRP]
       if (i>1){
-        for(j in 2:i-1){
+        for(j in 1:(i-1)){
           passedCheck = x[j]
           passedCheckIndexRP = which(colnames(rejectProbability)==passedCheck)
           passedRP = (1-rejectProbability[,passedCheckIndexRP])
           current = current * passedRP
         }
+        current = current * i # !!!
       }
       total = total+current
     }
     return (total)
   })
-  
-  
-  return (list(perm=results, order=permutations))
+
+  best = apply(results, 1, function(x)
+    which.min(x))
+  return(best)
 }
 
-computeCheckNumber <- function(permutations, order, testData, koActivities) {
-  our_index = which(colnames(permutations)=="Wilbest")
-  Wil_index = which(colnames(permutations)=="ourbest")
-  rand_index = which(colnames(permutations)=="rand")
+
+computeMinCheckNumber <- function(permutations, order, testData, koActivities) {
   name_index = which(colnames(permutations)=="name")
   
-  permutations$ourchecks = apply(permutations, 1, function(x) {
-    our_order = order[as.numeric(x[our_index]),]
-    #print(best_order)
-    testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
-    counter=0
-    for (check in our_order) {
-      counter=counter+1
-      if(testData[testDataIndex,which(colnames(testData)==check)]==0){
-        break;
-      }
-    }
-    return (counter)})
-    
-    permutations$Wilchecks = apply(permutations, 1, function(x) {
-    Wil_order = order[as.numeric(x[Wil_index]),]
-    #print(best_order)
-    testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
-    counter=0
-    for (check in Wil_order) {
-      counter=counter+1
-      if(testData[testDataIndex,which(colnames(testData)==check)]==0){
-        break;
-      }
-    }
-    return (counter)})
-    
-    permutations$randchecks = apply(permutations, 1, function(x) {
-    rand_order = order[as.numeric(x[rand_index]),]
-    #print(best_order)
-    testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
-    counter=0
-    for (check in rand_order) {
-      counter=counter+1
-      if(testData[testDataIndex,which(colnames(testData)==check)]==0){
-        break;
-      }
-    }
-    return (counter)})
-    
-  permutations$minimum_check_num = apply(permutations, 1, function(x) {
+  minimum_check_num = apply(permutations, 1, function(x) {
     testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
     PCCounterArray = mapply(function(y){
       if(testData[testDataIndex,which(colnames(testData)==y)]==1){
@@ -390,37 +375,29 @@ computeCheckNumber <- function(permutations, order, testData, koActivities) {
     PCCounter = ifelse (all(PCCounterArray==1), sum(PCCounterArray), 1)
     return (PCCounter)})  
   
-  return (permutations)
+  return (minimum_check_num)
 }
 
-printOutput<-function(i, permutations, order, fileOutputPath){
+
+computeCheckNumber <- function(permutations, order, testData, koActivities, checkIndex) {
+  name_index = which(colnames(permutations)=="name")
   
-#   globalTable = cbind(
-#     permutations$ourbest, order[permutations$ourbest,],permutations$ourchecks, permutations$minimum_check_num, (
-#       permutations$ourchecks - permutations$minimum_check_num
-#     )
-#   )
-  
-  globalTable = permutations
-  row.names(globalTable) = permutations$name
-  globalTable$name <- NULL
- 
-#   columns = c(
-#     "Permutation Number", mapply(function(x)
-#       sprintf("KOActivity_%i",x), seq(1, length(koActivities))), "Number of checks to be executed according to the suggestion", "Minimum Check Number (Ideal Processing)", "Check Overprocessing"
-#   )
-  colnames(globalTable) = c("our_best_permutation","wil_best","random",
-                            "nr_checks_our_suggestion",
-                            "nr_checks_wil","nr_checks_random",
-                            "minimum_check_number")
-  
-  toPrint = globalTable[order(as.numeric(rownames(globalTable))),]
-  cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-  fileName = paste("output_",cleanedFileName,"_",i, ".csv", sep = "")
-  write.table (
-    toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
-  )
+  check_num = apply(permutations, 1, function(x) {
+  our_order = order[as.numeric(x[checkIndex]),]
+  #print(best_order)
+  testDataIndex=which(as.numeric(row.names(testData))==as.numeric(x[name_index]))
+  counter=0
+  for (check in our_order) {
+    counter=counter+1
+    if(testData[testDataIndex,which(colnames(testData)==check)]==0){
+      break;
+    }
+  }
+  return (counter)})
+
+  return (check_num)
 }
+
 
 #compute best permutation
 # remember to add cross validation
@@ -430,7 +407,7 @@ printOutput<-function(i, permutations, order, fileOutputPath){
 # - output final -> how many ordering 1,2, ... 6 + how many 1 check, 2 checks, 3 checks, overprocessing
 
 computeBestPermutation <-
-  function(fileInputPath, fileOutputPath, koActivities, usefulFeatures, numFeatures, n) {
+  function(fileInputPath, fileOutputPath, koActivities, usefulFeatures, numFeatures, disallowed_permutation = c(), n) {
     print("reading in data file")
     inputData = read.csv(fileInputPath,header = TRUE,sep = ",")
     print("data preprocessing")
@@ -441,11 +418,7 @@ computeBestPermutation <-
       data=prepreProcessedData, koActivities = koActivities, usefulFeatures = usefulFeatures, numFeatures = numFeatures
     )
     
-    tableChecks=vector(mode="numeric", length=length(koActivities))
-    tableMinimumChecks=vector(mode="numeric", length = 2)
-    tableOverprocessing=vector(mode="numeric", length = length(koActivities))
-    
-    for (i in c(1:n)) {
+    for (r in c(1:n)) {
       data_gen = generateTrainingAndTesting(dataFiltered = preprocessedData$dataFiltered)
       
       print("computing reject probabilities")
@@ -453,117 +426,82 @@ computeBestPermutation <-
         trainingData = data_gen$trainingData, testData = data_gen$testData, koActivities = koActivities
       )
       
-      print("computing processing time")
-      if(fileInputPath=="Bondora.csv") {
-        predictedTime_gen = computePredictedTime (
-        trainingData = data_gen$trainingData, testData = data_gen$testData, numFeaturesIndexes =
-          preprocessedData$numFeaturesIndexes, koActivities = koActivities)
-      }
-      
-      if(fileInputPath=="Envpermit.csv") { # do not predict, just copy all ones as PTs
-        predictedTime_gen = data_gen$testData
-        predictedTime_gen = predictedTime_gen[(ncol(predictedTime_gen)-length(koActivities)+1):ncol(predictedTime_gen)]
-      }
-      
       print("computing permutations")
-      # Our model - order checks in decreasing probability of rejection
       Order = permutations(length(koActivities), length(koActivities), koActivities)
       rownames(Order)=c(1:nrow(Order))
+
+      if(length(disallowed_permutation) == 0) print("notice: all combinations of knock-out activities are allowed")
       
-      tmp = t(apply(rejectPb_gen, 1, function(x) {
-        order(x,decreasing = TRUE)
-      }
-      ))
-      
-      tmp2 = apply(tmp,1:2, function(x) {
-        x = colnames(rejectPb_gen)[x]
-      }
-      )
-      
-      ourbest=rep(-1,nrow(tmp2))
-      for (i in 1:nrow(tmp2)) {
-        for (j in 1:nrow(Order)) {
-          if (sum(tmp2[i,]==Order[j,])==length(koActivities)) ourbest[i]=j
+      if(length(disallowed_permutation) > 0) {
+        disallowed_permutation_id = c()
+        for (m in 1:nrow(disallowed_permutation)) {
+          for (j in 1:nrow(Order)) {
+          if (sum(disallowed_permutation[m,]==Order[j,])==length(koActivities)) {
+            disallowed_permutation_id=c(disallowed_permutation_id, j)
+          }
+          }
         }
+        print("disallowed permutations: ")
+        print(Order[disallowed_permutation_id,])
+        Order = Order[-disallowed_permutation_id,]
       }
+      
+      
+      # Our model - order checks in decreasing probability of rejection
+      our_best_perm = computePermutations(
+        rejectProbability = rejectPb_gen, koActivities = koActivities, Order = Order
+      )
       
       # Wil's model - constant probabilities of rejection "learnt" from the training set
       trainingData = data_gen$trainingData
-      koIndexes = match(koActivities, colnames(trainingData))
       rejectPb_Wil = rejectPb_gen
       for (i in 1:ncol(rejectPb_Wil)) {
         foo = which(colnames(trainingData) == colnames(rejectPb_Wil)[i])
         rejectPb_Wil[,i] = sum(trainingData[,foo]==0)/nrow(trainingData)
       }
       
-      tmp = t(apply(rejectPb_Wil, 1, function(x) {
-        order(x,decreasing = TRUE)
-      }
-      ))
-      
-      tmp2 = apply(tmp,1:2, function(x) {
-        x = colnames(rejectPb_Wil)[x]
-      }
+      Wil_best_perm = computePermutations(
+        rejectProbability = rejectPb_Wil, koActivities = koActivities, Order = Order
       )
       
-      Wilbest=rep(-1,nrow(tmp2))
-      for (i in 1:nrow(tmp2)) {
-        for (j in 1:nrow(Order)) {
-          if (sum(tmp2[i,]==Order[j,])==length(koActivities)) Wilbest[i]=j
-        }
-      }
-      
+
       # random model
-      rand = sample(1:nrow(Order),nrow(tmp2),replace = TRUE)
+      rand_perm = sample(1:nrow(Order),nrow(data_gen$testData),replace = TRUE)
       
-      permutations = as.data.frame(cbind (ourbest,Wilbest,rand))
-      permutations$name = row.names(rejectPb_gen)
+      newPermutations = as.data.frame(cbind (our_best_perm,Wil_best_perm,rand_perm))
+      newPermutations$name = row.names(rejectPb_gen)
       
-      newPermutations = computeCheckNumber(
-        permutations=permutations, order = Order, testData=data_gen$testData, koActivities = koActivities
-      )  
+      print("computing number of checks")
+      newPermutations$nr_checks_our = computeCheckNumber(
+        permutations=newPermutations, order = Order, testData=data_gen$testData, koActivities = koActivities,
+        checkIndex = which(colnames(newPermutations)=="our_best_perm"))  
       
-      printOutput(i=n, permutations=newPermutations, order=Order, fileOutputPath = fileOutputPath)
-#       tableChecks=tableChecks+table(newPermutations$checks)
-#       tableMinimumChecks=tableMinimumChecks+table(newPermutations$minimum_check_num) 
-#       tableOverprocessing=tableOverprocessing+table(
-#         newPermutations$checks - newPermutations$minimum_check_num
-#       )
+      newPermutations$nr_checks_Wil = computeCheckNumber(
+        permutations=newPermutations, order = Order, testData=data_gen$testData, koActivities = koActivities,
+        checkIndex = which(colnames(newPermutations)=="Wil_best_perm"))  
+      
+      newPermutations$nr_checks_rand = computeCheckNumber(
+        permutations=newPermutations, order = Order, testData=data_gen$testData, koActivities = koActivities,
+        checkIndex = which(colnames(newPermutations)=="rand_perm"))  
+      
+      newPermutations$minimum_check_number = computeMinCheckNumber(
+        permutations=newPermutations, order = Order, testData=data_gen$testData, koActivities = koActivities)  
+      
+      row.names(newPermutations) = newPermutations$name
+      newPermutations$name <- NULL
+      toPrint = newPermutations[order(as.numeric(rownames(newPermutations))),]
+      cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
+      fileName = paste("output_",cleanedFileName,"_",r, ".csv", sep = "")
+      write.table (
+        toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
+      )
+      
+      fileNameOrder = paste("output_",cleanedFileName,"_permutations", ".csv", sep = "")
+      write.table (
+        Order, file = fileNameOrder, append = FALSE, sep = ",", col.names = FALSE, row.names = FALSE,quote = FALSE
+      )
       
     }
-#     cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-#     fileNameGeneral = paste("output_",cleanedFileName,"_general", ".txt", sep = "")
-#     tableChecks=tableChecks/n
-#     tableMinimumChecks= tableMinimumChecks/n
-#     tableOverprocessing=tableOverprocessing/n
-    
-#     write (
-#       "***** STATISTICS ******* ", file = fileNameGeneral, append = FALSE, sep = ""
-#     )
-#     cat(
-#       c("1 check", "2 checks", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
-#     )     
-#     cat(
-#       tableChecks, file = fileNameGeneral, append = TRUE, sep = "\t\t"
-#     ) 
-#     write(
-#       c("\n","PROCESSING"), file = fileNameGeneral, append = TRUE, sep = "\t"
-#     )       
-#     cat(
-#       c("1 check", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
-#     )       
-#     cat(
-#       tableMinimumChecks, file = fileNameGeneral, append = TRUE, sep = "\t\t"
-#     )
-#     write(
-#       c("\n","OVERPROCESSING"), file = fileNameGeneral, append = TRUE, sep = "\t"
-#     )       
-#     cat(
-#       c("1 check", "2 checks", "3 checks", "\n"), file = fileNameGeneral, append = TRUE, sep = "\t"
-#     )     
-#     write(
-#       tableOverprocessing, file = fileNameGeneral, append = TRUE, sep = "\t"
-#     )
-    
+
   }
 
