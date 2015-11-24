@@ -181,56 +181,141 @@ removeTimeColumns<-function(data){
 
 
 ####functions for MACHINE LEARNING model training####
-runRF <- function(dat,testratio= 0.05,checktype,method="none") {
+runRF <- function(dat,testratio= 0.05,checktype,method=sampling_method,ntree = ntrees) {
   tgt = which(colnames(dat) == checktype)
   
-  #if(method != "none") {dat_bal <- ovun.sample(reformulate(colnames(dat)[-tgt],response = colnames(dat)[tgt]), data=dat, p=0.5, seed=1, method="over")$data}
+  if(method == "over") {
+    class_balance = table(dat[,tgt]) 
+    MM = which.min(class_balance)
+    diff = round(class_balance[-MM]/class_balance[MM])
+    smallid = which(dat[,tgt] == names(class_balance[MM]))
+    small = dat[smallid,]
+    extra = do.call("rbind", replicate(diff, small, simplify = FALSE))
+    dat = rbind(dat, extra)
+    print ("applied oversampling, resulting class distribution is: ")
+    print(table(dat[,tgt]))
+  }
   
+  if(method == "under") {
+    class_balance = table(dat[,tgt]) 
+    MM = which.min(class_balance)
+    small_id = which(dat[,tgt] == names(class_balance[MM]))
+    large_id = which(dat[,tgt] == names(class_balance[-MM]))
+    large_id_reduced = sample(large_id, 1.5*length(small_id), replace = FALSE)
+    all_ids = c(small_id,large_id_reduced)
+    dat = dat[all_ids,]
+    print ("applied undersampling, resulting class distribution is: ")
+    print(table(dat[,tgt]))
+  }
+  
+  if(method == "none") {
+    print ("no sampling applied, target class distribution is: ")
+    print(table(dat[,tgt]))
+  }
+
   testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
   testc = dat[testid,]
   trainc = dat[-testid,]
   
   formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
-  print(formul)
-  model <- randomForest(formul, data = dat, ntree = 100, importance = TRUE,do.trace=FALSE)
+  model <- randomForest(formul, data = dat, ntree = ntree, importance = FALSE,do.trace=FALSE)
   
   predicted <- predict(model, testc[,-tgt], type = "response")
   tt = table(pred=predicted, actual=testc[,tgt])
   err = 1 - sum(diag(tt))/sum(tt)
   
   prob1 <- predict(model, testc[,-tgt], type = "prob")
-  predd <- prediction(prob1[,2], testc[,tgt])
-  #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
+  #predd <- prediction(prob1[,2], testc[,tgt])
+  #as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
   
   return(list(model = model, imp = model$importance, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
+  #return(list(model = model))
+
 }
 
-runDT <- function(dat,testratio= 0.05,checktype,method) {
+runDT <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
   tgt = which(colnames(dat) == checktype)
   
-  #if(method != "none") {dat_bal <- ovun.sample(reformulate(colnames(dat)[-tgt],response = colnames(dat)[tgt]), data=dat, p=0.5, seed=1, method="over")$data}
+  if(method == "over") {
+    class_balance = table(dat[,tgt]) 
+    MM = which.min(class_balance)
+    diff = round(class_balance[-MM]/class_balance[MM])
+    smallid = which(dat[,tgt] == names(class_balance[MM]))
+    small = dat[smallid,]
+    extra = do.call("rbind", replicate(diff, small, simplify = FALSE))
+    dat = rbind(dat, extra)
+    print ("applied oversampling, resulting class distribution is: ")
+    print(table(dat[,tgt]))
+  }
+  
+  if(method == "under") {
+    class_balance = table(dat[,tgt]) 
+    MM = which.min(class_balance)
+    small_id = which(dat[,tgt] == names(class_balance[MM]))
+    large_id = which(dat[,tgt] == names(class_balance[-MM]))
+    large_id_reduced = sample(large_id, 1.5*length(small_id), replace = FALSE)
+    all_ids = c(small_id,large_id_reduced)
+    dat = dat[all_ids,]
+    print ("applied undersampling, resulting class distribution is: ")
+    print(table(dat[,tgt]))
+  }
+  
+  if(method == "none") {
+    print ("no sampling applied, target class distribution is: ")
+    print(table(dat[,tgt]))
+  }
   
   testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
   testc = dat[testid,]
   trainc = dat[-testid,]
   
   formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
-  obj2 = tune.rpart(formul, data = trainc, cp = c(0.01,0.1,0.2,0.5,0.8))
-  model <- rpart(form2, data = trainc, cp = obj2$best.parameters[1])
+  #obj2 = tune.rpart(formul, data = trainc, cp = c(0.1,0.2,0.6))
+  model <- rpart(formul, data = dat, cp = cps)
+  prp(model)
   
   predicted <- predict(model, testc[,-tgt], type = "class")
   tt = table(pred=predicted, actual=testc[,tgt])
   err = 1 - sum(diag(tt))/sum(tt)
   
   prob1 <- predict(model, testc[,-tgt], type = "prob")
-  predd <- prediction(prob1[,2], testc[,tgt])
+  #predd <- prediction(prob1[,2], testc[,tgt])
   #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
   
   return(list(model = model, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
 }
 
-runSVM <- function(dat,testratio= 0.05,checktype,method) {
+runSVM <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
   tgt = which(colnames(dat) == checktype)
+  
+  if(method == "over") {
+    class_balance = table(dat[,tgt]) 
+    MM = which.min(class_balance)
+    diff = round(class_balance[-MM]/class_balance[MM])
+    smallid = which(dat[,tgt] == names(class_balance[MM]))
+    small = dat[smallid,]
+    extra = do.call("rbind", replicate(diff, small, simplify = FALSE))
+    dat = rbind(dat, extra)
+    print ("applied oversampling, resulting class distribution is: ")
+    print(table(dat[,tgt]))
+  }
+  
+  if(method == "under") {
+    class_balance = table(dat[,tgt]) 
+    MM = which.min(class_balance)
+    small_id = which(dat[,tgt] == names(class_balance[MM]))
+    large_id = which(dat[,tgt] == names(class_balance[-MM]))
+    large_id_reduced = sample(large_id, 2*length(small_id), replace = FALSE)
+    all_ids = c(small_id,large_id_reduced)
+    dat = dat[all_ids,]
+    print ("applied undersampling, resulting class distribution is: ")
+    print(table(dat[,tgt]))
+  }
+  
+  if(method == "none") {
+    print ("no sampling applied, target class distribution is: ")
+    print(table(dat[,tgt]))
+  }
   
   testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
   testc = dat[testid,]
@@ -245,7 +330,7 @@ runSVM <- function(dat,testratio= 0.05,checktype,method) {
   
   prob1 <- predict(model, testc[,-tgt], probability = TRUE)
   prob_values <- attr(prob1, "probabilities")
-  predd <- prediction(prob_values[,2], testc[,tgt])
+  #predd <- prediction(prob_values[,2], testc[,tgt])
   #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
   
   return(list(model = model, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
@@ -281,6 +366,11 @@ computeRejectProbability <- function(trainingData, testData, koActivities){
   predRP = apply(RFResults, 2, function(x) { 
     index = which(colnames(testData)==x$koActivities)
     pred = predict(x$model, testData[, -index], type="prob")
+    #pred = predict(x$model, testData[, -index], probability = TRUE)
+    
+#     prob_values <- attr(pred, "probabilities")
+#     return(prob_values[,1])
+    
     return (pred[,1]) # !!!
   })
   
@@ -419,6 +509,9 @@ computeBestPermutation <-
     )
     
     for (r in c(1:n)) {
+      seed_nr=sample.int(1000000,1)
+      set.seed(seed_nr)
+      
       data_gen = generateTrainingAndTesting(dataFiltered = preprocessedData$dataFiltered)
       
       print("computing reject probabilities")
@@ -448,7 +541,7 @@ computeBestPermutation <-
       
       
       # Our model - order checks in decreasing probability of rejection
-      our_best_perm = computePermutations(
+      our_best_perm = computePermutationsByFormula(
         rejectProbability = rejectPb_gen, koActivities = koActivities, Order = Order
       )
       
@@ -460,7 +553,7 @@ computeBestPermutation <-
         rejectPb_Wil[,i] = sum(trainingData[,foo]==0)/nrow(trainingData)
       }
       
-      Wil_best_perm = computePermutations(
+      Wil_best_perm = computePermutationsByFormula(
         rejectProbability = rejectPb_Wil, koActivities = koActivities, Order = Order
       )
       
@@ -469,7 +562,7 @@ computeBestPermutation <-
       rand_perm = sample(1:nrow(Order),nrow(data_gen$testData),replace = TRUE)
       
       newPermutations = as.data.frame(cbind (our_best_perm,Wil_best_perm,rand_perm))
-      newPermutations$name = row.names(rejectPb_gen)
+      newPermutations$name = row.names(data_gen$testData)
       
       print("computing number of checks")
       newPermutations$nr_checks_our = computeCheckNumber(
@@ -491,7 +584,7 @@ computeBestPermutation <-
       newPermutations$name <- NULL
       toPrint = newPermutations[order(as.numeric(rownames(newPermutations))),]
       cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-      fileName = paste("output_",cleanedFileName,"_",r, ".csv", sep = "")
+      fileName = paste("output_",cleanedFileName,"_",r, "_", ntrees, "_", sampling_method, ".csv", sep = "")
       write.table (
         toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
       )

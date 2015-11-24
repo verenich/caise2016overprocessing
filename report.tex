@@ -1,104 +1,318 @@
-\documentclass{article}
-\usepackage[left=0.75in,top=0.65in,right=0.75in,bottom=0.55in]{geometry}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
 
-\usepackage{Sweave}
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[left=0.75in,top=0.65in,right=0.75in,bottom=0.55in]{geometry}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
-\input{report-concordance}
+
+
+
 \title{Calculation of processing and overprocessing}
 \date{}
 \maketitle
 
+
+
 \section{For Bondora log}
-\begin{Schunk}
-\begin{Sinput}
-> result = read.csv("output_bondora_1.csv",header = TRUE)
-\end{Sinput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{print}\hlstd{(}\hlkwd{getwd}\hlstd{())}
+\end{alltt}
+\begin{verbatim}
+## [1] "/home/coderus/ownCloud/Education/PhD/Papers/caise2016overprocessing/source/output"
+\end{verbatim}
+\begin{alltt}
+\hlstd{filenames} \hlkwb{<-} \hlkwd{list.files}\hlstd{()[}\hlkwd{grep}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"^output_bondora(?=.*\textbackslash{}\textbackslash{}_under.csv)"}\hlstd{,}\hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{),} \hlkwd{list.files}\hlstd{(),} \hlkwc{perl}\hlstd{=}\hlnum{TRUE}\hlstd{)]}
+\hlstd{dat} \hlkwb{=} \hlkwd{c}\hlstd{()}
+\hlstd{result} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlkwd{length}\hlstd{(filenames),}\hlkwc{ncol} \hlstd{=} \hlnum{6}\hlstd{)}
+\hlkwd{colnames}\hlstd{(result)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"nr_checks_our"}\hlstd{,}\hlstr{"nr_checks_Wil"}\hlstd{,}\hlstr{"nr_checks_rand"}\hlstd{,}
+                     \hlstr{"overproc_our"}\hlstd{,}\hlstr{"overproc_Wil"}\hlstd{,}\hlstr{"overproc_rand"}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(filenames)) \{}
+  \hlstd{foo} \hlkwb{=} \hlkwd{read.table}\hlstd{(filenames[i],}\hlkwc{sep}\hlstd{=}\hlstr{","}\hlstd{,}\hlkwc{header}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+  \hlstd{dat} \hlkwb{=} \hlkwd{rbind}\hlstd{(dat,foo)}
+  \hlstd{result[i,}\hlnum{1}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_our)}
+  \hlstd{result[i,}\hlnum{2}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_Wil)}
+  \hlstd{result[i,}\hlnum{3}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_rand)}
+  \hlstd{result[i,}\hlnum{4}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_our} \hlopt{-} \hlstd{foo}\hlopt{$}\hlstd{minimum_check_number)}
+  \hlstd{result[i,}\hlnum{5}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_Wil} \hlopt{-} \hlstd{foo}\hlopt{$}\hlstd{minimum_check_number)}
+  \hlstd{result[i,}\hlnum{6}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_rand} \hlopt{-} \hlstd{foo}\hlopt{$}\hlstd{minimum_check_number)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 Average number of checks that one would do if they follow \textbf{our ordering}:
 
-\begin{Schunk}
-\begin{Sinput}
-> mean(result$nr_checks_our_suggestion)
-\end{Sinput}
-\begin{Soutput}
-[1] 2.865327
-\end{Soutput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{1}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.7937
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
 
-\begin{Schunk}
-\begin{Sinput}
-> mean(result$nr_checks_wil)
-\end{Sinput}
-\begin{Soutput}
-[1] 2.843984
-\end{Soutput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{2}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.797
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
-\begin{Schunk}
-\begin{Sinput}
-> mean(result$nr_checks_random)
-\end{Sinput}
-\begin{Soutput}
-[1] 2.796306
-\end{Soutput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{3}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.8443
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Average \textbf{overprocessing} - our method
 
-\begin{Schunk}
-\begin{Sinput}
-> mean(result$nr_checks_our_suggestion - result$minimum_check_number)
-\end{Sinput}
-\begin{Soutput}
-[1] 0.02446331
-\end{Soutput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{4}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1009
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Average \textbf{overprocessing} - Wil method
 
-\begin{Schunk}
-\begin{Sinput}
-> mean(result$nr_checks_wil - result$minimum_check_number)
-\end{Sinput}
-\begin{Soutput}
-[1] 0.00312032
-\end{Soutput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{5}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1042
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Average \textbf{overprocessing} - random ordering
 
-\begin{Schunk}
-\begin{Sinput}
-> mean(result$nr_checks_random - result$minimum_check_number)
-\end{Sinput}
-\begin{Soutput}
-[1] -0.04455816
-\end{Soutput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{6}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1514
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \paragraph{Distribution of overprocessing}
 
-\begin{Schunk}
-\begin{Sinput}
-> result$our = result$nr_checks_our_suggestion - result$minimum_check_number
-> result$wil = result$nr_checks_wil - result$minimum_check_number
-> result$rand = result$nr_checks_random - result$minimum_check_number
-> tt = as.data.frame(cbind(table(result$our), table(result$wil), table(result$rand)))
-> colnames(tt)=c("our","wil","rand")
-> tt$overprocessing = rownames(tt)
-> tt.m = melt(tt, id.vars='overprocessing')
-> ggplot(tt.m, aes(overprocessing, value))+  geom_bar(aes(fill = variable), position = "dodge", stat="identity") + theme_grey(base_size = 18) + ylab("Nr of cases")
-\end{Sinput}
-\end{Schunk}
-\includegraphics{report-009}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{tt} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlnum{3}\hlstd{,}\hlkwc{ncol} \hlstd{=} \hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)))}
+\hlkwd{rownames}\hlstd{(tt)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"count_checks_our"}\hlstd{,}\hlstr{"count_checks_Wil"}\hlstd{,}\hlstr{"count_checks_rand"}\hlstd{)}
+\hlstd{tt[}\hlnum{1}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_our)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlstd{tt[}\hlnum{2}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_Wil)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlstd{tt[}\hlnum{3}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlkwd{colnames}\hlstd{(tt)} \hlkwb{=} \hlkwd{names}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand))}
+\hlkwd{print}\hlstd{(tt)}
+\end{alltt}
+\begin{verbatim}
+##                     1   2    3
+## count_checks_our  443 768 6802
+## count_checks_Wil  637 352 7023
+## count_checks_rand 428 392 7192
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 
 \section{For Environmental permit log}
-\begin{Schunk}
-\begin{Sinput}
-> result = read.csv("output_envpermit_1.csv",header = TRUE,sep=",")
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{filenames} \hlkwb{<-} \hlkwd{list.files}\hlstd{()[}\hlkwd{grep}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"^output_envpermit(?=.*\textbackslash{}\textbackslash{}_under.csv)"}\hlstd{,}\hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{),} \hlkwd{list.files}\hlstd{(),} \hlkwc{perl}\hlstd{=}\hlnum{TRUE}\hlstd{)]}
+\hlstd{dat} \hlkwb{=} \hlkwd{c}\hlstd{()}
+\hlstd{result} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlkwd{length}\hlstd{(filenames),}\hlkwc{ncol} \hlstd{=} \hlnum{6}\hlstd{)}
+\hlkwd{colnames}\hlstd{(result)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"nr_checks_our"}\hlstd{,}\hlstr{"nr_checks_Wil"}\hlstd{,}\hlstr{"nr_checks_rand"}\hlstd{,}
+                     \hlstr{"overproc_our"}\hlstd{,}\hlstr{"overproc_Wil"}\hlstd{,}\hlstr{"overproc_rand"}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(filenames)) \{}
+  \hlstd{foo} \hlkwb{=} \hlkwd{read.table}\hlstd{(filenames[i],}\hlkwc{sep}\hlstd{=}\hlstr{","}\hlstd{,}\hlkwc{header}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+  \hlstd{dat} \hlkwb{=} \hlkwd{rbind}\hlstd{(dat,foo)}
+  \hlstd{result[i,}\hlnum{1}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_our)}
+  \hlstd{result[i,}\hlnum{2}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_Wil)}
+  \hlstd{result[i,}\hlnum{3}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_rand)}
+  \hlstd{result[i,}\hlnum{4}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_our} \hlopt{-} \hlstd{foo}\hlopt{$}\hlstd{minimum_check_number)}
+  \hlstd{result[i,}\hlnum{5}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_Wil} \hlopt{-} \hlstd{foo}\hlopt{$}\hlstd{minimum_check_number)}
+  \hlstd{result[i,}\hlnum{6}\hlstd{]} \hlkwb{=} \hlkwd{mean}\hlstd{(foo}\hlopt{$}\hlstd{nr_checks_rand} \hlopt{-} \hlstd{foo}\hlopt{$}\hlstd{minimum_check_number)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Average number of checks that one would do if they follow \textbf{our ordering}:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{1}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.3337
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{2}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.3309
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Average number of checks that one would do if for every case they do checks in \textbf{random order}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{3}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.6626
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Average \textbf{overprocessing} - our method
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{4}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.6581
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Average \textbf{overprocessing} - Wil method
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{5}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.6553
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Average \textbf{overprocessing} - random ordering
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{6}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.987
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\paragraph{Distribution of overprocessing}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{tt} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlnum{3}\hlstd{,}\hlkwc{ncol} \hlstd{=} \hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)))}
+\hlkwd{rownames}\hlstd{(tt)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"count_checks_our"}\hlstd{,}\hlstr{"count_checks_Wil"}\hlstd{,}\hlstr{"count_checks_rand"}\hlstd{)}
+\hlstd{tt[}\hlnum{1}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_our)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlstd{tt[}\hlnum{2}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_Wil)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlstd{tt[}\hlnum{3}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlkwd{colnames}\hlstd{(tt)} \hlkwb{=} \hlkwd{names}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand))}
+\hlkwd{print}\hlstd{(tt)}
+\end{alltt}
+\begin{verbatim}
+##                   1   2   3
+## count_checks_our  3 158  85
+## count_checks_Wil  3 159  84
+## count_checks_rand 2  80 165
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\end{document}
