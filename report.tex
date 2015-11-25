@@ -98,7 +98,7 @@ Average number of checks that one would do if they follow \textbf{our ordering}:
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{1}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.7917
+## [1] 2.7919
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -111,7 +111,7 @@ Average number of checks that one would do if they apply \textbf{Wil's method} (
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{2}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.7964
+## [1] 2.7974
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -124,7 +124,7 @@ Average number of checks that one would do if for every case they do checks in \
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{3}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.8444
+## [1] 2.846
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -137,7 +137,7 @@ Average \textbf{overprocessing} - our method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{4}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1008
+## [1] 0.1001
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -150,7 +150,7 @@ Average \textbf{overprocessing} - Wil method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{5}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1055
+## [1] 0.1056
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -163,7 +163,7 @@ Average \textbf{overprocessing} - random ordering
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{6}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1535
+## [1] 0.1543
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -175,17 +175,17 @@ Average \textbf{overprocessing} - random ordering
 \begin{alltt}
 \hlstd{tt} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlnum{3}\hlstd{,}\hlkwc{ncol} \hlstd{=} \hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)))}
 \hlkwd{rownames}\hlstd{(tt)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"count_checks_our"}\hlstd{,}\hlstr{"count_checks_Wil"}\hlstd{,}\hlstr{"count_checks_rand"}\hlstd{)}
-\hlstd{tt[}\hlnum{1}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_our)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
-\hlstd{tt[}\hlnum{2}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_Wil)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
-\hlstd{tt[}\hlnum{3}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlstd{tt[}\hlnum{1}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_our)}\hlopt{/}\hlnum{1}\hlstd{)}
+\hlstd{tt[}\hlnum{2}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_Wil)}\hlopt{/}\hlnum{1}\hlstd{)}
+\hlstd{tt[}\hlnum{3}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)}\hlopt{/}\hlnum{1}\hlstd{)}
 \hlkwd{colnames}\hlstd{(tt)} \hlkwb{=} \hlkwd{names}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand))}
 \hlkwd{print}\hlstd{(tt)}
 \end{alltt}
 \begin{verbatim}
-##                     1   2    3
-## count_checks_our  453 764 6796
-## count_checks_Wil  639 353 7020
-## count_checks_rand 423 401 7188
+##                      1    2     3
+## count_checks_our  4530 7612 67978
+## count_checks_Wil  6354 3524 70242
+## count_checks_rand 4174 3987 71959
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -223,7 +223,7 @@ Average number of checks that one would do if they follow \textbf{our ordering}:
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{1}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.3337
+## [1] 2.3248
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -236,7 +236,7 @@ Average number of checks that one would do if they apply \textbf{Wil's method} (
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{2}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.3309
+## [1] 2.324
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -249,7 +249,7 @@ Average number of checks that one would do if for every case they do checks in \
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{3}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.6626
+## [1] 2.6602
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -262,7 +262,7 @@ Average \textbf{overprocessing} - our method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{4}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.6581
+## [1] 0.6654
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -275,7 +275,7 @@ Average \textbf{overprocessing} - Wil method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{5}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.6553
+## [1] 0.6646
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -288,7 +288,7 @@ Average \textbf{overprocessing} - random ordering
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{6}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.987
+## [1] 1.0008
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -300,17 +300,17 @@ Average \textbf{overprocessing} - random ordering
 \begin{alltt}
 \hlstd{tt} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlnum{3}\hlstd{,}\hlkwc{ncol} \hlstd{=} \hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)))}
 \hlkwd{rownames}\hlstd{(tt)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"count_checks_our"}\hlstd{,}\hlstr{"count_checks_Wil"}\hlstd{,}\hlstr{"count_checks_rand"}\hlstd{)}
-\hlstd{tt[}\hlnum{1}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_our)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
-\hlstd{tt[}\hlnum{2}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_Wil)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
-\hlstd{tt[}\hlnum{3}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)}\hlopt{/}\hlkwd{length}\hlstd{(filenames))}
+\hlstd{tt[}\hlnum{1}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_our)}\hlopt{/}\hlnum{1}\hlstd{)}
+\hlstd{tt[}\hlnum{2}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_Wil)}\hlopt{/}\hlnum{1}\hlstd{)}
+\hlstd{tt[}\hlnum{3}\hlstd{,]} \hlkwb{=} \hlkwd{round}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand)}\hlopt{/}\hlnum{1}\hlstd{)}
 \hlkwd{colnames}\hlstd{(tt)} \hlkwb{=} \hlkwd{names}\hlstd{(}\hlkwd{table}\hlstd{(dat}\hlopt{$}\hlstd{nr_checks_rand))}
 \hlkwd{print}\hlstd{(tt)}
 \end{alltt}
 \begin{verbatim}
-##                   1   2   3
-## count_checks_our  3 158  85
-## count_checks_Wil  3 159  84
-## count_checks_rand 2  80 165
+##                    1    2    3
+## count_checks_our  29 1603  828
+## count_checks_Wil  27 1609  824
+## count_checks_rand 16  804 1640
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
