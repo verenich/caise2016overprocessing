@@ -43,11 +43,12 @@ numFeatures = c()
 disallowed_permutation = matrix(c("T10","T10","T06","T02","T02","T06"),ncol = length(koActivities))
 #disallowed_permutation = matrix(c("T10","T10","T06", "T06","T02","T10", "T02","T06","T02"),ncol = length(koActivities))
 
-sampling_method = "under"
-ntrees = 80
+#for(sampling_method in c("under","over","none")){
+#for (ntrees in c(10,20,30,50,100,200)) {
 computeBestPermutation(fileInputPath="Envpermit.csv", fileOutputPath="envpermit.csv",
                        koActivities=koActivities, usefulFeatures, numFeatures,
-                       disallowed_permutation = disallowed_permutation, n=10)
+                       disallowed_permutation = disallowed_permutation, n=11)
+#}}
 
 
 
