@@ -58,17 +58,17 @@
 \date{}
 \maketitle
 
+\begin{equation}
+\widetilde{W_\sigma}=
+\sum_{i=1}^{N} ( P_i^r \cdot \prod_{k=1}^{i-1} (1 - P_k^r) \cdot (\sum_{j=1}^{i} E_j) )
+\label{eq:estim-overproc}
+\end{equation}
+
 
 
 \section{For Bondora log}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{print}\hlstd{(}\hlkwd{getwd}\hlstd{())}
-\end{alltt}
-\begin{verbatim}
-## [1] "/home/coderus/ownCloud/Education/PhD/Papers/caise2016overprocessing/source/output"
-\end{verbatim}
 \begin{alltt}
 \hlstd{filenames} \hlkwb{<-} \hlkwd{list.files}\hlstd{()[}\hlkwd{grep}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"^output_bondora(?=.*\textbackslash{}\textbackslash{}_under.csv)"}\hlstd{,}\hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{),} \hlkwd{list.files}\hlstd{(),} \hlkwc{perl}\hlstd{=}\hlnum{TRUE}\hlstd{)]}
 \hlstd{dat} \hlkwb{=} \hlkwd{c}\hlstd{()}
@@ -98,7 +98,7 @@ Average number of checks that one would do if they follow \textbf{our ordering}:
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{1}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.7919
+## [1] 2.7949
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -111,10 +111,14 @@ Average number of checks that one would do if they apply \textbf{Wil's method} (
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{2}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.7974
+## [1] 2.8013
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
+
+
+ 
+On average we are doing \textbf{0.228} \% less checks than Wil. \\
 
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
@@ -124,7 +128,7 @@ Average number of checks that one would do if for every case they do checks in \
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{3}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.846
+## [1] 2.8476
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -137,7 +141,7 @@ Average \textbf{overprocessing} - our method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{4}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1001
+## [1] 0.0981
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -150,10 +154,14 @@ Average \textbf{overprocessing} - Wil method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{5}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1056
+## [1] 0.1045
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
+
+
+ 
+On average our overprocessing is \textbf{6.486} \% less than Wil. \\
 
 Average \textbf{overprocessing} - random ordering
 
@@ -163,7 +171,7 @@ Average \textbf{overprocessing} - random ordering
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{6}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1543
+## [1] 0.1508
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -183,9 +191,9 @@ Average \textbf{overprocessing} - random ordering
 \end{alltt}
 \begin{verbatim}
 ##                      1    2     3
-## count_checks_our  4530 7612 67978
-## count_checks_Wil  6354 3524 70242
-## count_checks_rand 4174 3987 71959
+## count_checks_our  4574 7281 68265
+## count_checks_Wil  6199 3521 70400
+## count_checks_rand 4106 3995 72019
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -241,6 +249,10 @@ Average number of checks that one would do if they apply \textbf{Wil's method} (
 \end{kframe}
 \end{knitrout}
 
+
+ 
+On average we are doing \textbf{\ensuremath{-0.035}} \% less checks than Wil. \\
+
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
 \begin{knitrout}
@@ -279,6 +291,10 @@ Average \textbf{overprocessing} - Wil method
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
+
+
+ 
+On average our overprocessing is \textbf{\ensuremath{-0.122}} \% less than Wil. \\
 
 Average \textbf{overprocessing} - random ordering
 

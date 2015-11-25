@@ -25,8 +25,7 @@ numFeatures = c("AppliedAmount","Interest","LoanDuration","nr_of_dependants","in
 sampling_method = "under"
 ntrees = 40
 computeBestPermutation(fileInputPath="Bondora.csv", fileOutputPath="bondora.csv", 
-                       koActivities=koActivities, 
-                       usefulFeatures, numFeatures,n=10)
+                       koActivities=koActivities, usefulFeatures, numFeatures,n=10)
 
 
 
@@ -46,9 +45,9 @@ disallowed_permutation = matrix(c("T10","T10","T06","T02","T02","T06"),ncol = le
 
 sampling_method = "under"
 ntrees = 80
-    computeBestPermutation(fileInputPath="Envpermit.csv", fileOutputPath="envpermit.csv", 
-                           koActivities=koActivities, 
-                           usefulFeatures, numFeatures,disallowed_permutation = disallowed_permutation, n=10)
+computeBestPermutation(fileInputPath="Envpermit.csv", fileOutputPath="envpermit.csv",
+                       koActivities=koActivities, usefulFeatures, numFeatures,
+                       disallowed_permutation = disallowed_permutation, n=10)
 
 
 

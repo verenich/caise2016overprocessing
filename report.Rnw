@@ -14,6 +14,12 @@ concordance=TRUE
 \date{}
 \maketitle
 
+\begin{equation}
+\widetilde{W_\sigma}=
+\sum_{i=1}^{N} ( P_i^r \cdot \prod_{k=1}^{i-1} (1 - P_k^r) \cdot (\sum_{j=1}^{i} E_j) )
+\label{eq:estim-overproc}
+\end{equation}
+
 <<echo=FALSE, results='hide'>>=
 library(ggplot2)
 library(reshape)
@@ -22,7 +28,6 @@ library(reshape)
 
 \section{For Bondora log}
 << >>=
-print(getwd())
 filenames <- list.files()[grep(paste("^output_bondora(?=.*\\_under.csv)",sep=''), list.files(), perl=TRUE)]
 dat = c()
 result = matrix(0,nrow = length(filenames),ncol = 6)
@@ -53,6 +58,12 @@ Average number of checks that one would do if they apply \textbf{Wil's method} (
 round(mean(result[,2]),digits = 4)
 @
 
+<<echo=FALSE, results='hide'>>=
+Diff = 100*(mean(result[,2]) - mean(result[,1])) / mean(result[,1])
+@
+ 
+On average we are doing \textbf{\Sexpr{round(Diff,digits = 3)}} \% less checks than Wil. \\
+
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
 <<>>=
@@ -70,6 +81,12 @@ Average \textbf{overprocessing} - Wil method
 <<>>=
 round(mean(result[,5]),digits = 4)
 @
+
+<<echo=FALSE, results='hide'>>=
+Diff = 100*(mean(result[,5]) - mean(result[,4])) / mean(result[,4])
+@
+ 
+On average our overprocessing is \textbf{\Sexpr{round(Diff,digits = 3)}} \% less than Wil. \\
 
 Average \textbf{overprocessing} - random ordering
 
@@ -122,6 +139,12 @@ Average number of checks that one would do if they apply \textbf{Wil's method} (
 round(mean(result[,2]),digits = 4)
 @
 
+<<echo=FALSE, results='hide'>>=
+Diff = 100*(mean(result[,2]) - mean(result[,1])) / mean(result[,1])
+@
+ 
+On average we are doing \textbf{\Sexpr{round(Diff,digits = 3)}} \% less checks than Wil. \\
+
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
 <<>>=
@@ -139,6 +162,12 @@ Average \textbf{overprocessing} - Wil method
 <<>>=
 round(mean(result[,5]),digits = 4)
 @
+
+<<echo=FALSE, results='hide'>>=
+Diff = 100*(mean(result[,5]) - mean(result[,4])) / mean(result[,4])
+@
+ 
+On average our overprocessing is \textbf{\Sexpr{round(Diff,digits = 3)}} \% less than Wil. \\
 
 Average \textbf{overprocessing} - random ordering
 
