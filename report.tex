@@ -98,7 +98,7 @@ Average number of checks that one would do if they follow \textbf{our ordering}:
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{1}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.794
+## [1] 2.725
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -111,14 +111,14 @@ Average number of checks that one would do if they apply \textbf{Wil's method} (
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{2}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.801
+## [1] 2.7956
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
 
  
-On average we are doing \textbf{0.251} \% less checks than Wil. \\
+On average we are doing \textbf{2.59} \% less checks than Wil. \\
 
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
@@ -128,7 +128,7 @@ Average number of checks that one would do if for every case they do checks in \
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{3}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2.8475
+## [1] 2.8457
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -141,7 +141,7 @@ Average \textbf{overprocessing} - our method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{4}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.0978
+## [1] 0.0328
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -154,14 +154,14 @@ Average \textbf{overprocessing} - Wil method
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{5}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1048
+## [1] 0.1034
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
 
  
-On average our overprocessing is \textbf{7.158} \% less than Wil. \\
+On average our overprocessing is \textbf{215.15} \% less than Wil. \\
 
 Average \textbf{overprocessing} - random ordering
 
@@ -171,7 +171,7 @@ Average \textbf{overprocessing} - random ordering
 \hlkwd{round}\hlstd{(}\hlkwd{mean}\hlstd{(result[,}\hlnum{6}\hlstd{]),}\hlkwc{digits} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1512
+## [1] 0.1535
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -190,10 +190,10 @@ Average \textbf{overprocessing} - random ordering
 \hlkwd{print}\hlstd{(tt)}
 \end{alltt}
 \begin{verbatim}
-##                      1    2     3
-## count_checks_our  4523 7455 68142
-## count_checks_Wil  6208 3524 70388
-## count_checks_rand 4114 3992 72014
+##                       1    2     3
+## count_checks_our  10694 2847 74591
+## count_checks_Wil   7040 3935 77157
+## count_checks_rand  4532 4536 79064
 \end{verbatim}
 \end{kframe}
 \end{knitrout}

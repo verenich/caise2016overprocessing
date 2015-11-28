@@ -181,7 +181,7 @@ removeTimeColumns<-function(data){
 
 
 ####functions for MACHINE LEARNING model training####
-runRF <- function(dat,testratio= 0.05,checktype,method=sampling_method,ntree = ntrees) {
+runRF <- function(dat,testratio= 0.05,checktype,method=sampling_method,ntree = 80) {
   tgt = which(colnames(dat) == checktype)
   
   if(method == "over") {
@@ -271,7 +271,7 @@ runDT <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
   
   formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
   #obj2 = tune.rpart(formul, data = trainc, cp = c(0.1,0.2,0.6))
-  model <- rpart(formul, data = dat, cp = cps)
+  model <- rpart(formul, data = dat, cp = 0.0005)
   prp(model)
   
   predicted <- predict(model, testc[,-tgt], type = "class")
@@ -291,7 +291,7 @@ runSVM <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
   if(method == "over") {
     class_balance = table(dat[,tgt]) 
     MM = which.min(class_balance)
-    diff = round(class_balance[-MM]/class_balance[MM])
+    diff = floor(class_balance[-MM]/class_balance[MM])
     smallid = which(dat[,tgt] == names(class_balance[MM]))
     small = dat[smallid,]
     extra = do.call("rbind", replicate(diff, small, simplify = FALSE))
@@ -305,7 +305,8 @@ runSVM <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
     MM = which.min(class_balance)
     small_id = which(dat[,tgt] == names(class_balance[MM]))
     large_id = which(dat[,tgt] == names(class_balance[-MM]))
-    large_id_reduced = sample(large_id, 2*length(small_id), replace = FALSE)
+    if(length(large_id)/ length(small_id) >= 2) large_id_reduced = sample(large_id, 2*length(small_id), replace = FALSE)
+    if(length(large_id)/ length(small_id) < 2) large_id_reduced = sample(large_id, 1*length(small_id), replace = FALSE)
     all_ids = c(small_id,large_id_reduced)
     dat = dat[all_ids,]
     print ("applied undersampling, resulting class distribution is: ")
@@ -321,19 +322,29 @@ runSVM <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
   testc = dat[testid,]
   trainc = dat[-testid,]
   
-  formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
-  model <- svm(formul, data = trainc, probability = TRUE, kernel = "radial")
+  formul = reformulate(colnames(dat)[1:(ncol(dat)-length(koActivities))],response = colnames(dat)[tgt])
+  obj = tune(svm, formul, data = dat, kernel = "radial", ranges = list(cost = 10^(0:2),gamma = 10^(-2:-1)))
+  print(obj$best.parameters)
+  
+  class.weights = NULL
+  if(method == "none") {
+    wts <- 100 / table(dat[,tgt])
+    class.weights = wts
+    }
+  
+  model <- svm(formul, data = dat, probability = TRUE, kernel = "radial",
+               cost=obj$best.parameters[1],gamma=obj$best.parameters[2],class.weights=class.weights) # could use data=trainc
   
   predicted <- predict(model, testc[,-tgt])
   tt = table(pred=predicted, actual=testc[,tgt])
   err = 1 - sum(diag(tt))/sum(tt)
   
-  prob1 <- predict(model, testc[,-tgt], probability = TRUE)
-  prob_values <- attr(prob1, "probabilities")
+  #prob1 <- predict(model, testc[,-tgt], probability = TRUE)
+  #prob_values <- attr(prob1, "probabilities")
   #predd <- prediction(prob_values[,2], testc[,tgt])
   #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
   
-  return(list(model = model, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
+  return(list(model = model, tt = tt, err = err ))
   
 }
 
@@ -358,20 +369,19 @@ runRFtime <- function(testratio=0.2,data,numFeaturesIndexes) {
 ####functions for COMPUTING PROCESSING AND OVERPROCESSING####
 computeRejectProbability <- function(trainingData, testData, koActivities){
   noTimeTrainingData = removeTimeColumns(data = trainingData)
-  RFResults = mapply(function(x) runRF(dat=noTimeTrainingData, checktype = x), koActivities)
+  RFResults = mapply(function(x) runSVM(dat=noTimeTrainingData, checktype = x), koActivities)
   
   RFResults = rbind(RFResults, koActivities)
   
   # predict reject probability for each task
   predRP = apply(RFResults, 2, function(x) { 
     index = which(colnames(testData)==x$koActivities)
-    pred = predict(x$model, testData[, -index], type="prob")
-    #pred = predict(x$model, testData[, -index], probability = TRUE)
+    #pred = predict(x$model, testData[, -index], type="prob")
+    pred = predict(x$model, testData[, -index], probability = TRUE)
+    prob_values <- attr(pred, "probabilities")
+    return(prob_values[,1])
     
-#     prob_values <- attr(pred, "probabilities")
-#     return(prob_values[,1])
-    
-    return (pred[,1]) # !!!
+    #return (pred[,1]) # !!!
   })
   
   return (predRP)
@@ -584,7 +594,7 @@ computeBestPermutation <-
       newPermutations$name <- NULL
       toPrint = newPermutations[order(as.numeric(rownames(newPermutations))),]
       cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-      fileName = paste("output_",cleanedFileName,"_",r, "_", ntrees, "_", sampling_method, ".csv", sep = "")
+      fileName = paste("output_",cleanedFileName,"_",r, "_", sampling_method, ".csv", sep = "")
       write.table (
         toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
       )

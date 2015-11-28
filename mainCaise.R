@@ -22,11 +22,10 @@ numFeatures = c("AppliedAmount","Interest","LoanDuration","nr_of_dependants","in
                 "AppliedAmountToIncome","LiabilitiesToIncome","NoOfPreviousApplications",
                 "AmountOfPreviousApplications")
 
-sampling_method = "under"
-ntrees = 40
+for(sampling_method in c("under")){
 computeBestPermutation(fileInputPath="Bondora.csv", fileOutputPath="bondora.csv", 
-                       koActivities=koActivities, usefulFeatures, numFeatures,n=10)
-
+                       koActivities=koActivities, usefulFeatures, numFeatures,n=11)
+}
 
 
 ### For the environmental permit log - uncomment if you want to use this ####
@@ -43,12 +42,13 @@ numFeatures = c()
 disallowed_permutation = matrix(c("T10","T10","T06","T02","T02","T06"),ncol = length(koActivities))
 #disallowed_permutation = matrix(c("T10","T10","T06", "T06","T02","T10", "T02","T06","T02"),ncol = length(koActivities))
 
-#for(sampling_method in c("under","over","none")){
+for(sampling_method in c("over","none","under")){
 #for (ntrees in c(10,20,30,50,100,200)) {
 computeBestPermutation(fileInputPath="Envpermit.csv", fileOutputPath="envpermit.csv",
                        koActivities=koActivities, usefulFeatures, numFeatures,
                        disallowed_permutation = disallowed_permutation, n=11)
-#}}
+#}
+}
 
 
 
