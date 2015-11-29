@@ -160,8 +160,8 @@ generateExpTime <- function(data, koActivitiesDistribution, numFeaturesIndexes){
   return (numericData)
 }
 
-generateTrainingAndTesting <- function(dataFiltered){
-  testingId = sample(1:nrow(dataFiltered),round(0.2*nrow(dataFiltered)),replace=F)
+generateTrainingAndTesting <- function(dataFiltered, testratio = 0.2){
+  testingId = sample(1:nrow(dataFiltered),round(testratio*nrow(dataFiltered)),replace=F)
   testData = dataFiltered[testingId,] # testing 
   trainingData = dataFiltered[-testingId,] # training
   
@@ -202,8 +202,8 @@ trainClassifiers <- function(data, checktype, learner, sampling_method) {
     MM = which.min(class_balance)
     small_id = which(dat[,tgt] == names(class_balance[MM]))
     large_id = which(dat[,tgt] == names(class_balance[-MM]))
-    if(length(large_id)/ length(small_id) >= 2) large_id_reduced = sample(large_id, 1.6*length(small_id), replace = FALSE)
-    if(length(large_id)/ length(small_id) < 2) large_id_reduced = sample(large_id, 1*length(small_id), replace = FALSE)
+    if(length(large_id)/ length(small_id) >= 2) large_id_reduced = sample(large_id, 2*length(small_id), replace = FALSE)
+    if(length(large_id)/ length(small_id) < 2) large_id_reduced = sample(large_id, length(small_id), replace = FALSE)
     all_ids = c(small_id,large_id_reduced)
     dat = dat[all_ids,]
     print ("applied undersampling, resulting class distribution is: ")
@@ -217,7 +217,7 @@ trainClassifiers <- function(data, checktype, learner, sampling_method) {
   
   formul = reformulate(colnames(dat)[1:(ncol(dat)-length(koActivities))],response = colnames(dat)[tgt])
   if(learner == "svm") {
-    #obj = tune(svm, formul, data = dat, kernel = "radial", ranges = list(cost = 10^(0:1),gamma = 10^(-2:-1)))
+    #obj = tune(svm, formul, data = dat, kernel = "radial", ranges = list(cost = 10^(0:2),gamma = 10^(-2:-1)))
     #print(obj$best.parameters)
     
     class.weights = NULL
@@ -247,21 +247,21 @@ trainClassifiers <- function(data, checktype, learner, sampling_method) {
 
 
 #predict processing times
-runRFtime <- function(testratio=0.2,data,numFeaturesIndexes) {
-  indexes=c(numFeaturesIndexes,which (colnames(data)=="time"))
-  data = data[,indexes]
-  
-  testid = sample(1:nrow(data),round(testratio*nrow(data)),replace = F)
-  testc = data[testid,]
-  trainc = data[-testid,]
-  
-  #mod = glm(time ~ ., data = trainc, family = Gamma(link='log'))
-  mod = glm(time ~ ., data = trainc)
-  predicted <- predict(mod, testc[,-ncol(testc)], type = "response")
-  RMSE = sqrt(mean((testc[,ncol(testc)]-predicted)^2))
-  
-  return(list(mod = mod, pred = predicted, RMSE = RMSE))
-}
+# runRFtime <- function(data,numFeaturesIndexes) {
+#   indexes=c(numFeaturesIndexes,which (colnames(data)=="time"))
+#   data = data[,indexes]
+#   
+#   testid = sample(1:nrow(data),round(0.2*nrow(data)),replace = F)
+#   testc = data[testid,]
+#   trainc = data[-testid,]
+#   
+#   #mod = glm(time ~ ., data = trainc, family = Gamma(link='log'))
+#   mod = glm(time ~ ., data = trainc)
+#   predicted <- predict(mod, testc[,-ncol(testc)], type = "response")
+#   RMSE = sqrt(mean((testc[,ncol(testc)]-predicted)^2))
+#   
+#   return(list(mod = mod, pred = predicted, RMSE = RMSE))
+# }
 
 loadClassifiers <- function(checktype) {
   cleanedFileName = substring(fileInputPath,1,nchar(fileInputPath) - 4)
@@ -508,12 +508,12 @@ computeBestPermutation <-
       newPermutations$name <- NULL
       toPrint = newPermutations[order(as.numeric(rownames(newPermutations))),]
       cleanedFileName = substring(fileInputPath,1,nchar(fileInputPath) - 4)
-      fileName = sprintf("output/output_%s_%s_%s_%s.csv",cleanedFileName,learner,sampling_method,r)
+      fileName = sprintf("output2/output_%s_%s_%s_%s.csv",cleanedFileName,learner,sampling_method,r)
       write.table (
         toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
       )
       
-      fileNameOrder = sprintf("output/output_%s_permutations.txt",cleanedFileName)
+      fileNameOrder = sprintf("output2/output_%s_permutations.txt",cleanedFileName)
       write.table (
         Order, file = fileNameOrder, append = FALSE, sep = ",", col.names = FALSE, row.names = FALSE,quote = FALSE
       )

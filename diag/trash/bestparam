@@ -1,0 +1,3 @@
+IdCancellation 10  0.01
+PostFundingCancellation	1   0.1
+CreditDecision	10  0.01
