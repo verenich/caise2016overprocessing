@@ -70,7 +70,7 @@
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{filenames} \hlkwb{<-} \hlkwd{list.files}\hlstd{()[}\hlkwd{grep}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"^output_bondora(?=.*\textbackslash{}\textbackslash{}_under.csv)"}\hlstd{,}\hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{),} \hlkwd{list.files}\hlstd{(),} \hlkwc{perl}\hlstd{=}\hlnum{TRUE}\hlstd{)]}
+\hlstd{filenames} \hlkwb{<-} \hlkwd{list.files}\hlstd{()[}\hlkwd{grep}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"^output_Bondora(?=.*\textbackslash{}\textbackslash{}.csv)"}\hlstd{,}\hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{),} \hlkwd{list.files}\hlstd{(),} \hlkwc{perl}\hlstd{=}\hlnum{TRUE}\hlstd{)]}
 \hlstd{dat} \hlkwb{=} \hlkwd{c}\hlstd{()}
 \hlstd{result} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlkwd{length}\hlstd{(filenames),}\hlkwc{ncol} \hlstd{=} \hlnum{6}\hlstd{)}
 \hlkwd{colnames}\hlstd{(result)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"nr_checks_our"}\hlstd{,}\hlstr{"nr_checks_Wil"}\hlstd{,}\hlstr{"nr_checks_rand"}\hlstd{,}
@@ -203,7 +203,7 @@ Average \textbf{overprocessing} - random ordering
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{filenames} \hlkwb{<-} \hlkwd{list.files}\hlstd{()[}\hlkwd{grep}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"^output_envpermit(?=.*\textbackslash{}\textbackslash{}_under.csv)"}\hlstd{,}\hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{),} \hlkwd{list.files}\hlstd{(),} \hlkwc{perl}\hlstd{=}\hlnum{TRUE}\hlstd{)]}
+\hlstd{filenames} \hlkwb{<-} \hlkwd{list.files}\hlstd{()[}\hlkwd{grep}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"^output_Envpermit(?=.*\textbackslash{}\textbackslash{}.csv)"}\hlstd{,}\hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{),} \hlkwd{list.files}\hlstd{(),} \hlkwc{perl}\hlstd{=}\hlnum{TRUE}\hlstd{)]}
 \hlstd{dat} \hlkwb{=} \hlkwd{c}\hlstd{()}
 \hlstd{result} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow} \hlstd{=} \hlkwd{length}\hlstd{(filenames),}\hlkwc{ncol} \hlstd{=} \hlnum{6}\hlstd{)}
 \hlkwd{colnames}\hlstd{(result)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"nr_checks_our"}\hlstd{,}\hlstr{"nr_checks_Wil"}\hlstd{,}\hlstr{"nr_checks_rand"}\hlstd{,}

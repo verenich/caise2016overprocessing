@@ -180,115 +180,12 @@ removeTimeColumns<-function(data){
 }
 
 
-####functions for MACHINE LEARNING model training####
-runRF <- function(dat,testratio= 0.05,checktype,method=sampling_method,ntree = 80) {
-  tgt = which(colnames(dat) == checktype)
+####functions for TRAINING CLASSIFIERS to predict reject probabilities####
+trainClassifiers <- function(data, checktype, learner, sampling_method) {
+  dat = removeTimeColumns(data)
+  tgt = which(colnames(dat) == checktype)  
   
-  if(method == "over") {
-    class_balance = table(dat[,tgt]) 
-    MM = which.min(class_balance)
-    diff = round(class_balance[-MM]/class_balance[MM])
-    smallid = which(dat[,tgt] == names(class_balance[MM]))
-    small = dat[smallid,]
-    extra = do.call("rbind", replicate(diff, small, simplify = FALSE))
-    dat = rbind(dat, extra)
-    print ("applied oversampling, resulting class distribution is: ")
-    print(table(dat[,tgt]))
-  }
-  
-  if(method == "under") {
-    class_balance = table(dat[,tgt]) 
-    MM = which.min(class_balance)
-    small_id = which(dat[,tgt] == names(class_balance[MM]))
-    large_id = which(dat[,tgt] == names(class_balance[-MM]))
-    large_id_reduced = sample(large_id, 1.5*length(small_id), replace = FALSE)
-    all_ids = c(small_id,large_id_reduced)
-    dat = dat[all_ids,]
-    print ("applied undersampling, resulting class distribution is: ")
-    print(table(dat[,tgt]))
-  }
-  
-  if(method == "none") {
-    print ("no sampling applied, target class distribution is: ")
-    print(table(dat[,tgt]))
-  }
-
-  testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
-  testc = dat[testid,]
-  trainc = dat[-testid,]
-  
-  formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
-  model <- randomForest(formul, data = dat, ntree = ntree, importance = FALSE,do.trace=FALSE)
-  
-  predicted <- predict(model, testc[,-tgt], type = "response")
-  tt = table(pred=predicted, actual=testc[,tgt])
-  err = 1 - sum(diag(tt))/sum(tt)
-  
-  prob1 <- predict(model, testc[,-tgt], type = "prob")
-  #predd <- prediction(prob1[,2], testc[,tgt])
-  #as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
-  
-  return(list(model = model, imp = model$importance, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
-  #return(list(model = model))
-
-}
-
-runDT <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
-  tgt = which(colnames(dat) == checktype)
-  
-  if(method == "over") {
-    class_balance = table(dat[,tgt]) 
-    MM = which.min(class_balance)
-    diff = round(class_balance[-MM]/class_balance[MM])
-    smallid = which(dat[,tgt] == names(class_balance[MM]))
-    small = dat[smallid,]
-    extra = do.call("rbind", replicate(diff, small, simplify = FALSE))
-    dat = rbind(dat, extra)
-    print ("applied oversampling, resulting class distribution is: ")
-    print(table(dat[,tgt]))
-  }
-  
-  if(method == "under") {
-    class_balance = table(dat[,tgt]) 
-    MM = which.min(class_balance)
-    small_id = which(dat[,tgt] == names(class_balance[MM]))
-    large_id = which(dat[,tgt] == names(class_balance[-MM]))
-    large_id_reduced = sample(large_id, 1.5*length(small_id), replace = FALSE)
-    all_ids = c(small_id,large_id_reduced)
-    dat = dat[all_ids,]
-    print ("applied undersampling, resulting class distribution is: ")
-    print(table(dat[,tgt]))
-  }
-  
-  if(method == "none") {
-    print ("no sampling applied, target class distribution is: ")
-    print(table(dat[,tgt]))
-  }
-  
-  testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
-  testc = dat[testid,]
-  trainc = dat[-testid,]
-  
-  formul = reformulate(colnames(dat)[1:(ncol(dat)-3)],response = colnames(dat)[tgt])
-  #obj2 = tune.rpart(formul, data = trainc, cp = c(0.1,0.2,0.6))
-  model <- rpart(formul, data = dat, cp = 0.0005)
-  prp(model)
-  
-  predicted <- predict(model, testc[,-tgt], type = "class")
-  tt = table(pred=predicted, actual=testc[,tgt])
-  err = 1 - sum(diag(tt))/sum(tt)
-  
-  prob1 <- predict(model, testc[,-tgt], type = "prob")
-  #predd <- prediction(prob1[,2], testc[,tgt])
-  #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
-  
-  return(list(model = model, tt = tt, err = err, pred_bin = predicted, pred = prob1[,2]))
-}
-
-runSVM <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
-  tgt = which(colnames(dat) == checktype)
-  
-  if(method == "over") {
+  if(sampling_method == "over") {
     class_balance = table(dat[,tgt]) 
     MM = which.min(class_balance)
     diff = floor(class_balance[-MM]/class_balance[MM])
@@ -300,12 +197,12 @@ runSVM <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
     print(table(dat[,tgt]))
   }
   
-  if(method == "under") {
+  if(sampling_method == "under") {
     class_balance = table(dat[,tgt]) 
     MM = which.min(class_balance)
     small_id = which(dat[,tgt] == names(class_balance[MM]))
     large_id = which(dat[,tgt] == names(class_balance[-MM]))
-    if(length(large_id)/ length(small_id) >= 2) large_id_reduced = sample(large_id, 2*length(small_id), replace = FALSE)
+    if(length(large_id)/ length(small_id) >= 2) large_id_reduced = sample(large_id, 1.6*length(small_id), replace = FALSE)
     if(length(large_id)/ length(small_id) < 2) large_id_reduced = sample(large_id, 1*length(small_id), replace = FALSE)
     all_ids = c(small_id,large_id_reduced)
     dat = dat[all_ids,]
@@ -313,40 +210,41 @@ runSVM <- function(dat,testratio= 0.05,checktype,method=sampling_method) {
     print(table(dat[,tgt]))
   }
   
-  if(method == "none") {
+  if(sampling_method == "none") {
     print ("no sampling applied, target class distribution is: ")
     print(table(dat[,tgt]))
   }
   
-  testid = sample(1:nrow(dat),round(testratio*nrow(dat)),replace = F)
-  testc = dat[testid,]
-  trainc = dat[-testid,]
-  
   formul = reformulate(colnames(dat)[1:(ncol(dat)-length(koActivities))],response = colnames(dat)[tgt])
-  obj = tune(svm, formul, data = dat, kernel = "radial", ranges = list(cost = 10^(0:2),gamma = 10^(-2:-1)))
-  print(obj$best.parameters)
-  
-  class.weights = NULL
-  if(method == "none") {
-    wts <- 100 / table(dat[,tgt])
-    class.weights = wts
+  if(learner == "svm") {
+    #obj = tune(svm, formul, data = dat, kernel = "radial", ranges = list(cost = 10^(0:1),gamma = 10^(-2:-1)))
+    #print(obj$best.parameters)
+    
+    class.weights = NULL
+    if(sampling_method == "none") {
+      wts <- 100 / table(dat[,tgt])
+      class.weights = wts
     }
+    
+    model <- svm(formul, data = dat, probability = TRUE, kernel = "radial",
+                 #cost=obj$best.parameters[1],gamma=obj$best.parameters[2],
+                 class.weights=class.weights)
+    
+  }
   
-  model <- svm(formul, data = dat, probability = TRUE, kernel = "radial",
-               cost=obj$best.parameters[1],gamma=obj$best.parameters[2],class.weights=class.weights) # could use data=trainc
+  if(learner == "rf") {
+    model <- randomForest(formul, data = dat, ntree = 80, importance = FALSE,do.trace=FALSE)
+  }
   
-  predicted <- predict(model, testc[,-tgt])
-  tt = table(pred=predicted, actual=testc[,tgt])
-  err = 1 - sum(diag(tt))/sum(tt)
+  if(learner == "tree") {
+    model <- rpart(formul, data = dat, cp = 0.001)
+  }
   
-  #prob1 <- predict(model, testc[,-tgt], probability = TRUE)
-  #prob_values <- attr(prob1, "probabilities")
-  #predd <- prediction(prob_values[,2], testc[,tgt])
-  #AUC = as.numeric(performance(predd, measure = "auc", x.measure = "cutoff")@y.values)
-  
-  return(list(model = model, tt = tt, err = err ))
+  cleanedFileName = substring(fileInputPath,1,nchar(fileInputPath) - 4)
+  saveRDS(model, file=sprintf("learners/%s_%s_%s_%s.Rds", cleanedFileName, checktype, learner, sampling_method))
   
 }
+
 
 #predict processing times
 runRFtime <- function(testratio=0.2,data,numFeaturesIndexes) {
@@ -365,23 +263,33 @@ runRFtime <- function(testratio=0.2,data,numFeaturesIndexes) {
   return(list(mod = mod, pred = predicted, RMSE = RMSE))
 }
 
+loadClassifiers <- function(checktype) {
+  cleanedFileName = substring(fileInputPath,1,nchar(fileInputPath) - 4)
+  model = readRDS(file = sprintf("learners/%s_%s_%s_%s.Rds",
+                                 cleanedFileName,checktype,learner,sampling_method))
+  return(list(model=model))
+}
+
 
 ####functions for COMPUTING PROCESSING AND OVERPROCESSING####
-computeRejectProbability <- function(trainingData, testData, koActivities){
-  noTimeTrainingData = removeTimeColumns(data = trainingData)
-  RFResults = mapply(function(x) runSVM(dat=noTimeTrainingData, checktype = x), koActivities)
+computeRejectProbability <- function(testData, koActivities){
+  #noTimeTrainingData = removeTimeColumns(data = trainingData)
+  RFResults = mapply(function(x) loadClassifiers(checktype = x), koActivities)
   
   RFResults = rbind(RFResults, koActivities)
   
   # predict reject probability for each task
   predRP = apply(RFResults, 2, function(x) { 
     index = which(colnames(testData)==x$koActivities)
-    #pred = predict(x$model, testData[, -index], type="prob")
-    pred = predict(x$model, testData[, -index], probability = TRUE)
-    prob_values <- attr(pred, "probabilities")
-    return(prob_values[,1])
+    if (learner == "svm") {
+      pred = predict(x$RFResults, testData[, -index], probability = TRUE)
+      prob <- attr(pred, "probabilities")
+    }
     
-    #return (pred[,1]) # !!!
+    if(learner == "rf" | learner == "tree") {
+      prob = predict(x$RFResults, testData[, -index], type="prob")
+    }
+    return(prob[,1])
   })
   
   return (predRP)
@@ -507,7 +415,8 @@ computeCheckNumber <- function(permutations, order, testData, koActivities, chec
 # - output final -> how many ordering 1,2, ... 6 + how many 1 check, 2 checks, 3 checks, overprocessing
 
 computeBestPermutation <-
-  function(fileInputPath, fileOutputPath, koActivities, usefulFeatures, numFeatures, disallowed_permutation = c(), n) {
+  function(fileInputPath, koActivities, usefulFeatures, numFeatures,
+           disallowed_permutation = c(), n) {
     print("reading in data file")
     inputData = read.csv(fileInputPath,header = TRUE,sep = ",")
     print("data preprocessing")
@@ -524,10 +433,15 @@ computeBestPermutation <-
       
       data_gen = generateTrainingAndTesting(dataFiltered = preprocessedData$dataFiltered)
       
+      # retrain classifiers if needed
+      for(checktype in koActivities) {
+        trainClassifiers(data = data_gen$trainingData, checktype = checktype, learner, sampling_method)
+      }
+      
       print("computing reject probabilities")
-      rejectPb_gen = computeRejectProbability (
-        trainingData = data_gen$trainingData, testData = data_gen$testData, koActivities = koActivities
-      )
+      rejectPb_gen = computeRejectProbability(testData = data_gen$testData, koActivities = koActivities)
+      print(dim(rejectPb_gen))
+      colnames(rejectPb_gen)=koActivities
       
       print("computing permutations")
       Order = permutations(length(koActivities), length(koActivities), koActivities)
@@ -593,13 +507,13 @@ computeBestPermutation <-
       row.names(newPermutations) = newPermutations$name
       newPermutations$name <- NULL
       toPrint = newPermutations[order(as.numeric(rownames(newPermutations))),]
-      cleanedFileName = substring(fileOutputPath,1,nchar(fileOutputPath) - 4)
-      fileName = paste("output_",cleanedFileName,"_",r, "_", sampling_method, ".csv", sep = "")
+      cleanedFileName = substring(fileInputPath,1,nchar(fileInputPath) - 4)
+      fileName = sprintf("output/output_%s_%s_%s_%s.csv",cleanedFileName,learner,sampling_method,r)
       write.table (
         toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
       )
       
-      fileNameOrder = paste("output_",cleanedFileName,"_permutations", ".csv", sep = "")
+      fileNameOrder = sprintf("output/output_%s_permutations.txt",cleanedFileName)
       write.table (
         Order, file = fileNameOrder, append = FALSE, sep = ",", col.names = FALSE, row.names = FALSE,quote = FALSE
       )

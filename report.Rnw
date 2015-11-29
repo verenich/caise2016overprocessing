@@ -28,7 +28,7 @@ library(reshape)
 
 \section{For Bondora log}
 << >>=
-filenames <- list.files()[grep(paste("^output_bondora(?=.*\\_under.csv)",sep=''), list.files(), perl=TRUE)]
+filenames <- list.files()[grep(paste("^output_Bondora(?=.*\\.csv)",sep=''), list.files(), perl=TRUE)]
 dat = c()
 result = matrix(0,nrow = length(filenames),ncol = 6)
 colnames(result) = c("nr_checks_our","nr_checks_Wil","nr_checks_rand",
@@ -109,7 +109,7 @@ print(tt)
 
 \section{For Environmental permit log}
 << >>=
-filenames <- list.files()[grep(paste("^output_envpermit(?=.*\\_under.csv)",sep=''), list.files(), perl=TRUE)]
+filenames <- list.files()[grep(paste("^output_Envpermit(?=.*\\.csv)",sep=''), list.files(), perl=TRUE)]
 dat = c()
 result = matrix(0,nrow = length(filenames),ncol = 6)
 colnames(result) = c("nr_checks_our","nr_checks_Wil","nr_checks_rand",
