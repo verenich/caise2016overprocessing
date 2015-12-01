@@ -203,7 +203,7 @@ trainClassifiers <- function(data, checktype, learner, sampling_method) {
     small_id = which(dat[,tgt] == names(class_balance[MM]))
     large_id = which(dat[,tgt] == names(class_balance[-MM]))
     if(length(large_id)/ length(small_id) >= 2) large_id_reduced = sample(large_id, 2*length(small_id), replace = FALSE)
-    if(length(large_id)/ length(small_id) < 2) large_id_reduced = sample(large_id, length(small_id), replace = FALSE)
+    if(length(large_id)/ length(small_id) < 2) large_id_reduced = sample(large_id, 1.25*length(small_id), replace = FALSE)
     all_ids = c(small_id,large_id_reduced)
     dat = dat[all_ids,]
     print ("applied undersampling, resulting class distribution is: ")
@@ -217,7 +217,7 @@ trainClassifiers <- function(data, checktype, learner, sampling_method) {
   
   formul = reformulate(colnames(dat)[1:(ncol(dat)-length(koActivities))],response = colnames(dat)[tgt])
   if(learner == "svm") {
-    #obj = tune(svm, formul, data = dat, kernel = "radial", ranges = list(cost = 10^(0:2),gamma = 10^(-2:-1)))
+    obj = tune(svm, formul, data = dat, kernel = "radial", ranges = list(cost = 10^(0:2),gamma = 10^(-2:-1)))
     #print(obj$best.parameters)
     
     class.weights = NULL
@@ -227,7 +227,7 @@ trainClassifiers <- function(data, checktype, learner, sampling_method) {
     }
     
     model <- svm(formul, data = dat, probability = TRUE, kernel = "radial",
-                 #cost=obj$best.parameters[1],gamma=obj$best.parameters[2],
+                 cost=obj$best.parameters[1],gamma=obj$best.parameters[2],
                  class.weights=class.weights)
     
   }
@@ -416,34 +416,43 @@ computeCheckNumber <- function(permutations, order, testData, koActivities, chec
 
 computeBestPermutation <-
   function(fileInputPath, koActivities, usefulFeatures, numFeatures,
-           disallowed_permutation = c(), n) {
-    print("reading in data file")
+           disallowed_permutation = c(), n=1) {
+    print("**************")
+    ptm <- proc.time()
     inputData = read.csv(fileInputPath,header = TRUE,sep = ",")
-    print("data preprocessing")
     if(fileInputPath=="Bondora.csv") {prepreProcessedData=preprocessBondora(inputData, koActivities=koActivities)}
     if(fileInputPath=="Envpermit.csv") {prepreProcessedData=preprocessEnvpermit(inputData, koActivities=koActivities)}
-    
     preprocessedData = preprocessData(
       data=prepreProcessedData, koActivities = koActivities, usefulFeatures = usefulFeatures, numFeatures = numFeatures
     )
+    ptm2 <- (proc.time() - ptm)[3]
+    out = sprintf("%g samples read in and processed in %f seconds", nrow(preprocessedData$dataFiltered),ptm2)
+    print(out)
     
     for (r in c(1:n)) {
       seed_nr=sample.int(1000000,1)
       set.seed(seed_nr)
-      
       data_gen = generateTrainingAndTesting(dataFiltered = preprocessedData$dataFiltered)
       
       # retrain classifiers if needed
+      ptm <- proc.time()
       for(checktype in koActivities) {
         trainClassifiers(data = data_gen$trainingData, checktype = checktype, learner, sampling_method)
       }
+      ptm2 <- (proc.time() - ptm)[3]
+      out = sprintf("%g samples used for training classifiers in %f seconds", nrow(data_gen$trainingData),ptm2)
+      print(out)
       
-      print("computing reject probabilities")
+      # computing reject probabilities
+      ptm <- proc.time()
       rejectPb_gen = computeRejectProbability(testData = data_gen$testData, koActivities = koActivities)
-      print(dim(rejectPb_gen))
+      ptm2 <- (proc.time() - ptm)[3]
+      out = sprintf("%g samples used to compute RP's in %f seconds", nrow(data_gen$testData),ptm2)
+      print(out)
       colnames(rejectPb_gen)=koActivities
       
-      print("computing permutations")
+      # computing permutations
+      ptm <- proc.time()
       Order = permutations(length(koActivities), length(koActivities), koActivities)
       rownames(Order)=c(1:nrow(Order))
 
@@ -468,6 +477,9 @@ computeBestPermutation <-
       our_best_perm = computePermutationsByFormula(
         rejectProbability = rejectPb_gen, koActivities = koActivities, Order = Order
       )
+      ptm2 <- (proc.time() - ptm)[3]
+      out = sprintf("%g samples used to compute permutations in %f seconds", nrow(data_gen$testData),ptm2)
+      print(out)
       
       # Wil's model - constant probabilities of rejection "learnt" from the training set
       trainingData = data_gen$trainingData
@@ -488,7 +500,7 @@ computeBestPermutation <-
       newPermutations = as.data.frame(cbind (our_best_perm,Wil_best_perm,rand_perm))
       newPermutations$name = row.names(data_gen$testData)
       
-      print("computing number of checks")
+      # computing number of checks when applying our, Wil and random ordering
       newPermutations$nr_checks_our = computeCheckNumber(
         permutations=newPermutations, order = Order, testData=data_gen$testData, koActivities = koActivities,
         checkIndex = which(colnames(newPermutations)=="our_best_perm"))  
@@ -508,12 +520,12 @@ computeBestPermutation <-
       newPermutations$name <- NULL
       toPrint = newPermutations[order(as.numeric(rownames(newPermutations))),]
       cleanedFileName = substring(fileInputPath,1,nchar(fileInputPath) - 4)
-      fileName = sprintf("output2/output_%s_%s_%s_%s.csv",cleanedFileName,learner,sampling_method,r)
+      fileName = sprintf("output/output_%s_%s_%s_%s.csv",cleanedFileName,learner,sampling_method,r)
       write.table (
         toPrint, file = fileName, append = FALSE, sep = ",", col.names = TRUE, row.names = TRUE,quote = FALSE
       )
       
-      fileNameOrder = sprintf("output2/output_%s_permutations.txt",cleanedFileName)
+      fileNameOrder = sprintf("output/output_%s_permutations.txt",cleanedFileName)
       write.table (
         Order, file = fileNameOrder, append = FALSE, sep = ",", col.names = FALSE, row.names = FALSE,quote = FALSE
       )

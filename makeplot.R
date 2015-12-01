@@ -25,9 +25,9 @@ datAUC$yy = as.numeric(as.character(datAUC$yy))
 datAUC$check = as.factor(datAUC$check)
 
 require(grid)
-pdf(file="AUCBondora.pdf",family="CM Roman",width=6,height=6)
+pdf(file="AUCBondora.pdf",family="CM Roman",width=5,height=5)
 ggplot(data=datAUC, aes(x=100*xx, y=100*yy, colour=check)) +
-  geom_line(aes(linetype=check),size=0.6) +
+  geom_line(aes(linetype=check),size=0.7) +
   scale_linetype_manual(values=c("dotted","dashed","dotdash","solid"))+
   scale_color_manual(values=c("black","red","blue","darkgreen"))+
   theme(text = element_text(size=15))+
@@ -66,9 +66,9 @@ datAUC$yy = as.numeric(as.character(datAUC$yy))
 datAUC$check = as.factor(datAUC$check)
 
 require(grid)
-pdf(file="AUCEnvPermit.pdf",family="CM Roman",width=6,height=6)
+pdf(file="AUCEnvPermit.pdf",family="CM Roman",width=5,height=5)
 ggplot(data=datAUC, aes(x=100*xx, y=100*yy, colour=check)) +
-  geom_line(aes(linetype=check),size=0.6) +
+  geom_line(aes(linetype=check),size=0.7) +
   scale_linetype_manual(values=c("dotted","dashed","dotdash","solid"))+
   scale_color_manual(values=c("black","red","blue","darkgreen"))+
   theme(text = element_text(size=15))+

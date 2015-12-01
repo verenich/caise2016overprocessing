@@ -1,0 +1,179 @@
+> fileInputPath = "Bondora.csv"
+> learner = "svm"
+> sampling_method="under"
+> for (kk in 1:4) {
++ computeBestPermutation(fileInputPath=fileInputPath,  koActivities=koActivities,
++                        usefulFeatures, numFeatures,n=1)
++ }
+[1] "**************"
+[1] "40062 samples read in and processed in 18.981000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+5160 2580 
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+2832 1416 
+[1] "applied undersampling, resulting class distribution is: "
+
+   0    1 
+ 952 1904 
+[1] "32050 samples used for training classifiers in 67.843000 seconds"
+[1] "8012 samples used to compute RP's in 10.401000 seconds"
+[1] "notice: all combinations of knock-out activities are allowed"
+[1] "8012 samples used to compute permutations in 0.043000 seconds"
+[1] "**************"
+[1] "40062 samples read in and processed in 17.061000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+5144 2572 
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+2894 1447 
+[1] "applied undersampling, resulting class distribution is: "
+
+   0    1 
+ 931 1862 
+[1] "32050 samples used for training classifiers in 89.072000 seconds"
+[1] "8012 samples used to compute RP's in 11.868000 seconds"
+[1] "notice: all combinations of knock-out activities are allowed"
+[1] "8012 samples used to compute permutations in 0.056000 seconds"
+[1] "**************"
+[1] "40062 samples read in and processed in 17.220000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+5160 2580 
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+2880 1440 
+[1] "applied undersampling, resulting class distribution is: "
+
+   0    1 
+ 950 1900 
+[1] "32050 samples used for training classifiers in 71.881000 seconds"
+[1] "8012 samples used to compute RP's in 9.342000 seconds"
+[1] "notice: all combinations of knock-out activities are allowed"
+[1] "8012 samples used to compute permutations in 0.042000 seconds"
+[1] "**************"
+[1] "40062 samples read in and processed in 16.865000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+5164 2582 
+[1] "applied undersampling, resulting class distribution is: "
+
+   1    0 
+2838 1419 
+[1] "applied undersampling, resulting class distribution is: "
+
+   0    1 
+ 932 1864 
+[1] "32050 samples used for training classifiers in 74.786000 seconds"
+[1] "8012 samples used to compute RP's in 10.717000 seconds"
+[1] "notice: all combinations of knock-out activities are allowed"
+[1] "8012 samples used to compute permutations in 0.043000 seconds"
+> 
+> 
+> 
+> fileInputPath="Envpermit.csv"
+> 
+> learner = "rf"
+> sampling_method="under"
+> for (kk in 1:4) {
++ computeBestPermutation(fileInputPath=fileInputPath,  koActivities=koActivities,
++                        usefulFeatures, numFeatures,disallowed_permutation = disallowed_permutation,n=1)
++ }
+[1] "**************"
+[1] "1230 samples read in and processed in 0.870000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+ 0  1 
+ 5 10 
+[1] "applied undersampling, resulting class distribution is: "
+
+ 0  1 
+12 24 
+[1] "applied undersampling, resulting class distribution is: "
+
+  0   1 
+414 345 
+[1] "984 samples used for training classifiers in 0.149000 seconds"
+[1] "246 samples used to compute RP's in 0.023000 seconds"
+[1] "disallowed permutations: "
+  [,1]  [,2]  [,3] 
+6 "T10" "T06" "T02"
+5 "T10" "T02" "T06"
+[1] "246 samples used to compute permutations in 0.002000 seconds"
+[1] "**************"
+[1] "1230 samples read in and processed in 0.829000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+0 1 
+4 8 
+[1] "applied undersampling, resulting class distribution is: "
+
+ 0  1 
+12 24 
+[1] "applied undersampling, resulting class distribution is: "
+
+  0   1 
+402 335 
+[1] "984 samples used for training classifiers in 0.157000 seconds"
+[1] "246 samples used to compute RP's in 0.025000 seconds"
+[1] "disallowed permutations: "
+  [,1]  [,2]  [,3] 
+6 "T10" "T06" "T02"
+5 "T10" "T02" "T06"
+[1] "246 samples used to compute permutations in 0.004000 seconds"
+[1] "**************"
+[1] "1230 samples read in and processed in 0.865000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+ 0  1 
+ 5 10 
+[1] "applied undersampling, resulting class distribution is: "
+
+ 0  1 
+14 28 
+[1] "applied undersampling, resulting class distribution is: "
+
+  0   1 
+421 351 
+[1] "984 samples used for training classifiers in 0.130000 seconds"
+[1] "246 samples used to compute RP's in 0.022000 seconds"
+[1] "disallowed permutations: "
+  [,1]  [,2]  [,3] 
+6 "T10" "T06" "T02"
+5 "T10" "T02" "T06"
+[1] "246 samples used to compute permutations in 0.002000 seconds"
+[1] "**************"
+[1] "1230 samples read in and processed in 0.902000 seconds"
+[1] "applied undersampling, resulting class distribution is: "
+
+0 1 
+3 6 
+[1] "applied undersampling, resulting class distribution is: "
+
+ 0  1 
+11 22 
+[1] "applied undersampling, resulting class distribution is: "
+
+  0   1 
+420 350 
+[1] "984 samples used for training classifiers in 0.125000 seconds"
+[1] "246 samples used to compute RP's in 0.021000 seconds"
+[1] "disallowed permutations: "
+  [,1]  [,2]  [,3] 
+6 "T10" "T06" "T02"
+5 "T10" "T02" "T06"
+[1] "246 samples used to compute permutations in 0.002000 seconds"
+> 
+> 
+> proc.time()
+   user  system elapsed 
+850.364   4.244 855.136 

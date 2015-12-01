@@ -2,7 +2,7 @@
 \usepackage[left=0.75in,top=0.65in,right=0.75in,bottom=0.55in]{geometry}
 
 \begin{document}
-
+\author{Ilya Verenich}
 <<include=FALSE>>=
 library(knitr)
 opts_chunk$set(
@@ -27,7 +27,7 @@ library(reshape)
 @
 
 \section{For Bondora log}
-<< >>=
+<<echo=FALSE, results='hide'>>=
 filenames <- list.files()[grep(paste("^output_Bondora(?=.*\\.csv)",sep=''), list.files(), perl=TRUE)]
 dat = c()
 result = matrix(0,nrow = length(filenames),ncol = 6)
@@ -46,69 +46,69 @@ for (i in 1:length(filenames)) {
 }
 @
 
-Average number of checks that one would do if they follow \textbf{our ordering}:
+Minimal possible number of checks, averaged over \Sexpr{length(filenames)} test sets :
 
 <<>>=
-round(mean(result[,1]),digits = 4)
+round(sum(dat$minimum_check_number)/length(filenames))
+@
+
+
+Average number of checks per test set that one would do if they follow \textbf{our ordering}:
+
+<<>>=
+round(sum(dat$nr_checks_our)/length(filenames))
 @
 
 Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
 
 <<>>=
-round(mean(result[,2]),digits = 4)
+round(sum(dat$nr_checks_Wil)/length(filenames))
 @
-
-<<echo=FALSE, results='hide'>>=
-Diff = 100*(mean(result[,2]) - mean(result[,1])) / mean(result[,1])
-@
- 
-On average we are doing \textbf{\Sexpr{round(Diff,digits = 3)}} \% less checks than Wil. \\
 
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
 <<>>=
-round(mean(result[,3]),digits = 4)
+round(sum(dat$nr_checks_rand)/length(filenames))
 @
 
-Average \textbf{overprocessing} - our method
+Average overprocessing (in \%) with our ordering:
 
 <<>>=
-round(mean(result[,4]),digits = 4)
+round(100*(sum(dat$nr_checks_our) - sum(dat$minimum_check_number))/(length(filenames)*sum(dat$minimum_check_number)/length(filenames)),digits = 2)
 @
 
-Average \textbf{overprocessing} - Wil method
+Average overprocessing with Wil ordering:
 
 <<>>=
-round(mean(result[,5]),digits = 4)
+round(100*(sum(dat$nr_checks_Wil) - sum(dat$minimum_check_number))/(length(filenames)*sum(dat$minimum_check_number)/length(filenames)),digits = 2)
 @
 
+Average overprocessing with random ordering:
+
+<<>>=
+round(100*(sum(dat$nr_checks_rand) - sum(dat$minimum_check_number))/(length(filenames)*sum(dat$minimum_check_number)/length(filenames)),digits = 2)
+@
+
+\textbf{Distribution of the number of checks performed}
 <<echo=FALSE, results='hide'>>=
-Diff = 100*(mean(result[,5]) - mean(result[,4])) / mean(result[,4])
-@
- 
-On average our overprocessing is \textbf{\Sexpr{round(Diff,digits = 3)}} \% less than Wil. \\
-
-Average \textbf{overprocessing} - random ordering
-
-<<>>=
-round(mean(result[,6]),digits = 4)
-@
-
-\paragraph{Distribution of overprocessing}
-
-<<>>=
-tt = matrix(0,nrow = 3,ncol = length(unique(dat$nr_checks_rand)))
-rownames(tt) = c("count_checks_our","count_checks_Wil","count_checks_rand")
-tt[1,] = round(table(dat$nr_checks_our)/1)
-tt[2,] = round(table(dat$nr_checks_Wil)/1)
-tt[3,] = round(table(dat$nr_checks_rand)/1)
+tt = matrix(0,nrow = 4,ncol = length(unique(dat$nr_checks_rand)))
+rownames(tt) = c("count_checks_our","count_checks_Wil","count_checks_rand","minimal")
+tt[1,] = round(table(dat$nr_checks_our)/length(filenames))
+tt[2,] = round(table(dat$nr_checks_Wil)/length(filenames))
+tt[3,] = round(table(dat$nr_checks_rand)/length(filenames))
+tt[4,1] = sum(dat$minimum_check_number == 1)/length(filenames)
+tt[4,2] = 0
+tt[4,3] = sum(dat$minimum_check_number == 3)/length(filenames)
 colnames(tt) = names(table(dat$nr_checks_rand))
+@
+
+<<>>=
 print(tt)
 @
 
 
 \section{For Environmental permit log}
-<< >>=
+<<echo=FALSE, results='hide'>>=
 filenames <- list.files()[grep(paste("^output_Envpermit(?=.*\\.csv)",sep=''), list.files(), perl=TRUE)]
 dat = c()
 result = matrix(0,nrow = length(filenames),ncol = 6)
@@ -127,64 +127,65 @@ for (i in 1:length(filenames)) {
 }
 @
 
-Average number of checks that one would do if they follow \textbf{our ordering}:
+Minimal possible number of checks, averaged over \Sexpr{length(filenames)} test sets :
 
 <<>>=
-round(mean(result[,1]),digits = 4)
+round(sum(dat$minimum_check_number)/length(filenames))
+@
+
+
+Average number of checks per test set that one would do if they follow \textbf{our ordering}:
+
+<<>>=
+round(sum(dat$nr_checks_our)/length(filenames))
 @
 
 Average number of checks that one would do if they apply \textbf{Wil's method} (constant reject probabilities):
 
 <<>>=
-round(mean(result[,2]),digits = 4)
+round(sum(dat$nr_checks_Wil)/length(filenames))
 @
-
-<<echo=FALSE, results='hide'>>=
-Diff = 100*(mean(result[,2]) - mean(result[,1])) / mean(result[,1])
-@
- 
-On average we are doing \textbf{\Sexpr{round(Diff,digits = 3)}} \% less checks than Wil. \\
 
 Average number of checks that one would do if for every case they do checks in \textbf{random order}
 
 <<>>=
-round(mean(result[,3]),digits = 4)
+round(sum(dat$nr_checks_rand)/length(filenames))
 @
 
-Average \textbf{overprocessing} - our method
+Average overprocessing (in \%) with our ordering:
 
 <<>>=
-round(mean(result[,4]),digits = 4)
+round(100*(sum(dat$nr_checks_our) - sum(dat$minimum_check_number))/(length(filenames)*sum(dat$minimum_check_number)/length(filenames)),digits = 2)
 @
 
-Average \textbf{overprocessing} - Wil method
+Average overprocessing with Wil ordering:
 
 <<>>=
-round(mean(result[,5]),digits = 4)
+round(100*(sum(dat$nr_checks_Wil) - sum(dat$minimum_check_number))/(length(filenames)*sum(dat$minimum_check_number)/length(filenames)),digits = 2)
 @
 
+Average overprocessing with random ordering:
+
+<<>>=
+round(100*(sum(dat$nr_checks_rand) - sum(dat$minimum_check_number))/(length(filenames)*sum(dat$minimum_check_number)/length(filenames)),digits = 2)
+@
+
+\textbf{Distribution of the number of checks performed}
 <<echo=FALSE, results='hide'>>=
-Diff = 100*(mean(result[,5]) - mean(result[,4])) / mean(result[,4])
-@
- 
-On average our overprocessing is \textbf{\Sexpr{round(Diff,digits = 3)}} \% less than Wil. \\
-
-Average \textbf{overprocessing} - random ordering
-
-<<>>=
-round(mean(result[,6]),digits = 4)
-@
-
-\paragraph{Distribution of overprocessing}
-
-<<>>=
-tt = matrix(0,nrow = 3,ncol = length(unique(dat$nr_checks_rand)))
-rownames(tt) = c("count_checks_our","count_checks_Wil","count_checks_rand")
-tt[1,] = round(table(dat$nr_checks_our)/1)
-tt[2,] = round(table(dat$nr_checks_Wil)/1)
-tt[3,] = round(table(dat$nr_checks_rand)/1)
+tt = matrix(0,nrow = 4,ncol = length(unique(dat$nr_checks_rand)))
+rownames(tt) = c("count_checks_our","count_checks_Wil","count_checks_rand","minimal")
+tt[1,] = round(table(dat$nr_checks_our)/length(filenames),digits = 1)
+tt[2,] = round(table(dat$nr_checks_Wil)/length(filenames),digits = 1)
+tt[3,] = round(table(dat$nr_checks_rand)/length(filenames),digits = 1)
+tt[4,1] = sum(dat$minimum_check_number == 1)/length(filenames)
+tt[4,2] = 0
+tt[4,3] = sum(dat$minimum_check_number == 3)/length(filenames)
 colnames(tt) = names(table(dat$nr_checks_rand))
+@
+
+<<>>=
 print(tt)
 @
+
 
 \end{document}

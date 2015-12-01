@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.10)  29 NOV 2015 03:20
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.10)  30 NOV 2015 06:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -217,100 +217,104 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <8> on input line 59.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 59.
-
-LaTeX Warning: No \author given.
-
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 61.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 61.
-Package color Info: Redefining color shadecolor on input line 71.
+Package color Info: Redefining color shadecolor on input line 75.
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 73.
-LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 73.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 77.
+Package color Info: Redefining color shadecolor on input line 89.
+Package color Info: Redefining color shadecolor on input line 102.
+Package color Info: Redefining color shadecolor on input line 115.
+Package color Info: Redefining color shadecolor on input line 128.
 
-(/usr/share/R/share/texmf/tex/latex/omscmtt.fd
-File: omscmtt.fd 
-)
-LaTeX Font Info:    Font shape `OMS/cmtt/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
-
-Overfull \hbox (23.8555pt too wide) in paragraph at lines 73--73
-[][]\OT1/cmtt/m/n/10 filenames[] []<-[] []list.files[][]()[[][]grep[][]([][]pas
-te[][]([][]"^output_Bondora(?=.*\OMS/cmsy/m/n/10 nn\OT1/cmtt/m/n/10 .csv)"[][],
-[][]sep[][]=[][]^^M^^M[][]),[] []list.files[][](),[] []perl[][]=[][]TRUE[][])][
-][] 
+Overfull \hbox (260.60332pt too wide) in paragraph at lines 130--130
+[][]\OT1/cmtt/m/n/10 round[][]([][]100[][]*[][]([][]sum[][](dat[][]$[][]nr_chec
+ks_our)[] []-[] []sum[][](dat[][]$[][]minimum_check_number))[][]/[][]([][]lengt
+h[][](filenames)[][]*[][]sum[][](dat[][]$[][]minimum_check_number)[][]/[][]leng
+th[][](filenames)),[][]digits[] []=[] []2[][])[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 96.
-Package color Info: Redefining color shadecolor on input line 109.
+Package color Info: Redefining color shadecolor on input line 141.
 
-Underfull \hbox (badness 10000) in paragraph at lines 121--122
-
+Overfull \hbox (260.60332pt too wide) in paragraph at lines 143--143
+[][]\OT1/cmtt/m/n/10 round[][]([][]100[][]*[][]([][]sum[][](dat[][]$[][]nr_chec
+ks_Wil)[] []-[] []sum[][](dat[][]$[][]minimum_check_number))[][]/[][]([][]lengt
+h[][](filenames)[][]*[][]sum[][](dat[][]$[][]minimum_check_number)[][]/[][]leng
+th[][](filenames)),[][]digits[] []=[] []2[][])[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 126.
-Package color Info: Redefining color shadecolor on input line 139.
-Package color Info: Redefining color shadecolor on input line 152.
+Package color Info: Redefining color shadecolor on input line 154.
+
+Overfull \hbox (265.85327pt too wide) in paragraph at lines 156--156
+[][]\OT1/cmtt/m/n/10 round[][]([][]100[][]*[][]([][]sum[][](dat[][]$[][]nr_chec
+ks_rand)[] []-[] []sum[][](dat[][]$[][]minimum_check_number))[][]/[][]([][]leng
+th[][](filenames)[][]*[][]sum[][](dat[][]$[][]minimum_check_number)[][]/[][]len
+gth[][](filenames)),[][]digits[] []=[] []2[][])[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 168.
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 164--165
-
- []
-
-Package color Info: Redefining color shadecolor on input line 169.
-Package color Info: Redefining color shadecolor on input line 182.
-Package color Info: Redefining color shadecolor on input line 204.
-
-Overfull \hbox (34.35541pt too wide) in paragraph at lines 206--206
-[][]\OT1/cmtt/m/n/10 filenames[] []<-[] []list.files[][]()[[][]grep[][]([][]pas
-te[][]([][]"^output_Envpermit(?=.*\OMS/cmsy/m/n/10 nn\OT1/cmtt/m/n/10 .csv)"[][
-],[][]sep[][]=[][]^^M^^M[][]),[] []list.files[][](),[] []perl[][]=[][]TRUE[][])
-][][] 
- []
-
+Package color Info: Redefining color shadecolor on input line 189.
+Package color Info: Redefining color shadecolor on input line 203.
+Package color Info: Redefining color shadecolor on input line 216.
 Package color Info: Redefining color shadecolor on input line 229.
 Package color Info: Redefining color shadecolor on input line 242.
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 254--255
 
+Overfull \hbox (260.60332pt too wide) in paragraph at lines 244--244
+[][]\OT1/cmtt/m/n/10 round[][]([][]100[][]*[][]([][]sum[][](dat[][]$[][]nr_chec
+ks_our)[] []-[] []sum[][](dat[][]$[][]minimum_check_number))[][]/[][]([][]lengt
+h[][](filenames)[][]*[][]sum[][](dat[][]$[][]minimum_check_number)[][]/[][]leng
+th[][](filenames)),[][]digits[] []=[] []2[][])[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 259.
-Package color Info: Redefining color shadecolor on input line 272.
-Package color Info: Redefining color shadecolor on input line 285.
+Package color Info: Redefining color shadecolor on input line 255.
 
-Underfull \hbox (badness 10000) in paragraph at lines 297--298
-
+Overfull \hbox (260.60332pt too wide) in paragraph at lines 257--257
+[][]\OT1/cmtt/m/n/10 round[][]([][]100[][]*[][]([][]sum[][](dat[][]$[][]nr_chec
+ks_Wil)[] []-[] []sum[][](dat[][]$[][]minimum_check_number))[][]/[][]([][]lengt
+h[][](filenames)[][]*[][]sum[][](dat[][]$[][]minimum_check_number)[][]/[][]leng
+th[][](filenames)),[][]digits[] []=[] []2[][])[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 302.
-Package color Info: Redefining color shadecolor on input line 315.
-[3] (./report.aux) ) 
+Package color Info: Redefining color shadecolor on input line 268.
+
+Overfull \hbox (265.85327pt too wide) in paragraph at lines 270--270
+[][]\OT1/cmtt/m/n/10 round[][]([][]100[][]*[][]([][]sum[][](dat[][]$[][]nr_chec
+ks_rand)[] []-[] []sum[][](dat[][]$[][]minimum_check_number))[][]/[][]([][]leng
+th[][](filenames)[][]*[][]sum[][](dat[][]$[][]minimum_check_number)[][]/[][]len
+gth[][](filenames)),[][]digits[] []=[] []2[][])[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 282.
+[2] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 2126 strings out of 493304
- 30644 string characters out of 6139871
- 102334 words of memory out of 5000000
- 5565 multiletter control sequences out of 15000+600000
+ 2106 strings out of 493304
+ 30285 string characters out of 6139871
+ 103334 words of memory out of 5000000
+ 5549 multiletter control sequences out of 15000+600000
  7756 words of font info for 28 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,6n,23p,368b,280s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,6n,23p,417b,246s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmb
 x12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fo
-nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmtt10.pfb>
-Output written on report.pdf (3 pages, 120570 bytes).
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmtt10.pfb>
+Output written on report.pdf (2 pages, 123162 bytes).
 PDF statistics:
- 58 PDF objects out of 1000 (max. 8388607)
- 41 compressed objects within 1 object stream
+ 59 PDF objects out of 1000 (max. 8388607)
+ 42 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
