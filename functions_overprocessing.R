@@ -339,27 +339,54 @@ computePermutations <- function(rejectProbability, koActivities, Order) {
 }
 
 computePermutationsByFormula <- function(rejectProbability, koActivities, Order) {
-
-  results = apply(Order, 1, function(x) {
-    index = which(apply(t(Order) == x,2,all))
-    total = 0
-    for(i in 1:length(x)){
-      check = x[i]
-      checkIndexRP = which(colnames(rejectProbability)==check)
-      current = rejectProbability[,checkIndexRP]
-      if (i>1){
-        for(j in 1:(i-1)){
-          passedCheck = x[j]
-          passedCheckIndexRP = which(colnames(rejectProbability)==passedCheck)
-          passedRP = (1-rejectProbability[,passedCheckIndexRP])
-          current = current * passedRP
+  results = matrix(-1,nrow = nrow(rejectProbability),ncol=nrow(Order))
+  rownames(results) = rownames((rejectProbability))
+  colnames(results) = 1:nrow(Order)
+  
+  for (k in 1:nrow(rejectProbability)) {
+    for (jj in 1:nrow(Order)) {
+      perm = Order[jj,]
+      total = 0
+      for(i in 1:length(perm)){
+        check = perm[i]
+        checkIndexRP = which(colnames(rejectProbability)==check)
+        current = ifelse(i==length(perm), 1, rejectProbability[k,checkIndexRP])
+        if (i>1){
+          for(j in 1:(i-1)){
+            passedCheck = perm[j]
+            passedCheckIndexRP = which(colnames(rejectProbability)==passedCheck)
+            passedRP = (1-rejectProbability[k,passedCheckIndexRP])
+            current = current * passedRP
+          }
+          current = current * i
         }
-        current = current * i # !!!
+        total = total+current
+        
       }
-      total = total+current
+      results[k,jj] = total
     }
-    return (total)
-  })
+  }
+  
+#   results = apply(Order, 1, function(x) {
+#     index = which(apply(t(Order) == x,2,all))
+#     total = 0
+#     for(i in 1:length(x)){
+#       check = x[i]
+#       checkIndexRP = which(colnames(rejectProbability)==check)
+#       current = rejectProbability[,checkIndexRP]
+#       if (i>1){
+#         for(j in 1:(i-1)){
+#           passedCheck = x[j]
+#           passedCheckIndexRP = which(colnames(rejectProbability)==passedCheck)
+#           passedRP = (1-rejectProbability[,passedCheckIndexRP])
+#           current = current * passedRP
+#         }
+#         current = current * i
+#       }
+#       total = total+current
+#     }
+#     return (total)
+#   })
 
   best = apply(results, 1, function(x)
     which.min(x))

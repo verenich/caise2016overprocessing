@@ -9,16 +9,15 @@ usefulFeatures = c("Resource","X.case..channel","X.case..department","X.case..gr
 
 numFeatures = c()
 
-disallowed_permutation = matrix(c("T10","T10","T06","T02","T02","T06"),ncol = length(koActivities))
+disallowed_permutation = matrix(c("T10","T06","T02","T10","T02","T06"),ncol = length(koActivities),byrow = TRUE)
 #disallowed_permutation = matrix(c("T10","T10","T06", "T06","T02","T10", "T02","T06","T02"),ncol = length(koActivities))
 fileInputPath="Envpermit.csv"
 
-learner = "rf"
-sampling_method="under"
-for (kk in 1:4) {
+learner = "svm"
+sampling_method="none"
 computeBestPermutation(fileInputPath=fileInputPath,  koActivities=koActivities,
                        usefulFeatures, numFeatures,disallowed_permutation = disallowed_permutation,n=1)
-}
+
 
 rm(list=ls())
 
