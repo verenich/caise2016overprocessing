@@ -96,9 +96,9 @@ rownames(tt) = c("count_checks_our","count_checks_Wil","count_checks_rand","mini
 tt[1,] = round(table(dat$nr_checks_our)/length(filenames))
 tt[2,] = round(table(dat$nr_checks_Wil)/length(filenames))
 tt[3,] = round(table(dat$nr_checks_rand)/length(filenames))
-tt[4,1] = sum(dat$minimum_check_number == 1)/length(filenames)
+tt[4,1] = round(sum(dat$minimum_check_number == 1)/length(filenames))
 tt[4,2] = 0
-tt[4,3] = sum(dat$minimum_check_number == 3)/length(filenames)
+tt[4,3] = round(sum(dat$minimum_check_number == 3)/length(filenames))
 colnames(tt) = names(table(dat$nr_checks_rand))
 @
 
