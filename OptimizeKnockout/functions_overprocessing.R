@@ -435,7 +435,8 @@ computeProcEffort <- function(permutations, order, testData, koActivities, check
 computeOverprocessing <- function(inputData, koActivities, usefulFeatures, numFeatures, disallowed_permutation = c(), n) {
     print("**************")
     ptm <- proc.time()
-    input = read.csv(inputData,header = TRUE,sep = ",")
+    input = read.csv(paste(
+      "http://kodu.ut.ee/~ilyav/pubs/caise2016/data/",inputData,sep = ""),header = TRUE,sep = ",")
     if(inputData=="Bondora.csv") {
       prepreProcessedData=preprocessBondora(input, koActivities=koActivities)
     } else if (inputData=="Envpermit.csv") {
