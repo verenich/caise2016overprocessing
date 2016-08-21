@@ -3,9 +3,9 @@ Supplementary material for the article "Minimizing overprocessing waste in busin
 
 Requirements: R 3.2.0 or above; internet connection to download the datasets and possibly missing packages
 
-USAGE:
-cd OptimizeKnockout
-Rscript OptimizeKnockout.R inputData koActivities usefulFeatures disallowed_permutation learner sampling_method n retrain
+	USAGE:
+	cd OptimizeKnockout
+	Rscript OptimizeKnockout.R inputData koActivities usefulFeatures disallowed_permutation learner sampling_method n retrain
 
 Example usage:
 Rscript OptimizeKnockout.R inputData="Bondora.csv" learner="svm" sampling_method="under" n=3
