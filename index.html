@@ -1,25 +1,37 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html>
   <head>
-    <meta charset="UTF-8">
-    <title>Reducing overprocessing via predictive activity reordering by verenich</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Reducing overprocessing via predictive activity reordering by verenich</title>
   </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Reducing overprocessing via predictive activity reordering</h1>
-      <h2 class="project-tagline">Supplementary materials for the CAiSE &#39;16 paper</h2>
-      <a href="https://github.com/verenich/caise2016overprocessing" class="btn">View on GitHub</a>
-      <a href="https://github.com/verenich/caise2016overprocessing/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/verenich/caise2016overprocessing/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
 
-    <section class="main-content">
-      <p>Following are the supplementary material for the article <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-39696-5_12">"Minimizing overprocessing waste in business processes via predictive activity ordering"</a> by Ilya Verenich, Marlon Dumas, Marcello La Rosa, Fabrizio Maggi, and Chiara Di Francescomarino.</p>
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Reducing overprocessing via predictive activity reordering</h1>
+          <h2>Supplementary materials for the CAiSE &#39;16 paper</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/verenich/caise2016overprocessing/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/verenich/caise2016overprocessing/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/verenich/caise2016overprocessing" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <p>Following are the supplementary material for the article <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-39696-5_12">"Minimizing overprocessing waste in business processes via predictive activity ordering"</a> by Ilya Verenich, Marlon Dumas, Marcello La Rosa, Fabrizio Maggi, and Chiara Di Francescomarino.</p>
 
 <p><strong>Requirements:</strong><br>
 R 3.2.0 or above; internet connection to download the datasets and possibly missing packages</p>
@@ -31,10 +43,10 @@ R 3.2.0 or above; internet connection to download the datasets and possibly miss
 <p><strong>Example usage:</strong><br>
 <code>Rscript OptimizeKnockout.R inputData="Bondora.csv" learner="svm" sampling_method="under" n=3</code></p>
 
-<p>*<em>Input: *</em><br>
+<p><strong>Input:</strong><br>
 Event log in the csv format. Only "Bondora.csv" and "Envpermit.csv" have been tested so far  </p>
 
-<p>*<em>Output: *</em></p>
+<p><strong>Output:</strong></p>
 
 <ul>
 <li>n csv files, containing optimal permutation, in the coded form, for each ongoing case according to our suggestion (+ according to the constant probabilities baseline + random), number of checks actually performed for each case and the minimum possible number of checks</li>
@@ -45,15 +57,22 @@ Event log in the csv format. Only "Bondora.csv" and "Envpermit.csv" have been te
 <p><strong>Parameters:</strong>   </p>
 
 <ul>
-<li>koActivities - list of checks in the knock-out sections. For example, <em>koActivities='c("checkIncome","checkIdentity")'</em>
+<li>
+<em>koActivities</em> - list of checks in the knock-out sections. For example, <em>koActivities='c("checkIncome","checkIdentity")'</em>
 </li>
-<li>usefulFeatures - list of features to be used for constructing predicitve models</li>
-<li>disallowed_permutation - disallowed combination(s) of checks</li>
-<li>learner - classification model for reject probabilities, <em>"rf"</em> for random forest, <em>"tree"</em> for decision tree and <em>"svm"</em> for SVM</li>
-<li>sampling_method - sampling of training cases wrt class label to achieve class balance, <em>"under"</em> for undersampling, <em>"none"</em> for none, <em>"over"</em> for oversampling. Default <em>"under"</em>
+<li>
+<em>usefulFeatures</em> - list of features to be used for constructing predicitve models</li>
+<li>
+<em>disallowed_permutation</em> - disallowed combination(s) of checks</li>
+<li>
+<em>learner</em> - classification model for reject probabilities, <em>"rf"</em> for random forest, <em>"tree"</em> for decision tree and <em>"svm"</em> for SVM</li>
+<li>
+<em>sampling_method</em> - sampling of training cases wrt class label to achieve class balance, <em>"under"</em> for undersampling, <em>"none"</em> for none, <em>"over"</em> for oversampling. Default <em>"under"</em>
 </li>
-<li>n - number of random iterations of the whole algorithm (training and test files are regenerated at each run). Default 1</li>
-<li>retrain - logical flag indicating whether to retrain predictive models. Default TRUE</li>
+<li>
+<em>n</em> - number of random iterations of the whole algorithm (training and test files are regenerated at each run). Default 1</li>
+<li>
+<em>retrain</em> - logical flag indicating whether to retrain predictive models. Default TRUE</li>
 </ul>
 
 <p><strong>Note:</strong> If using <em>inputData="Bondora.csv"</em> or <em>inputData="Envpermit.csv"</em>, all other paramaters are optional </p>
@@ -62,15 +81,15 @@ Event log in the csv format. Only "Bondora.csv" and "Envpermit.csv" have been te
 If you receive an error <em>"'Rscript' is not recognized as an internal or external command, operable program or batch file"</em>, please add the path to the executables for R to the system variable "PATH" (on Windows typically <em>'C:\Program Files (x64)\R\R-3.x.y'</em>)</p>
 
 <p>Note that this code is a supplementary material and should be modified for the use with other datasets</p>
+        </section>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/verenich/caise2016overprocessing">Reducing overprocessing via predictive activity reordering</a> is maintained by <a href="https://github.com/verenich">verenich</a>.</span>
+        <footer>
+          Reducing overprocessing via predictive activity reordering is maintained by <a href="https://github.com/verenich">verenich</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
 
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
-
-  
+        
+      </div>
+    </div>
   </body>
 </html>
